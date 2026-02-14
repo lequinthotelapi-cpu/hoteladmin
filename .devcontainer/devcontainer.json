@@ -28,6 +28,7 @@
     }
   },
   "postCreateCommand": "npm install",
+  "postStartCommand": "git config --global http.sslVerify false && git config --global user.name 'lequinthotelapi-cpu' && git config --global user.email 'tu_email@ejemplo.com'",
   "remoteUser": "root",
   "mounts": [
     "source=${localWorkspaceFolder}/.vscode,target=/workspace/.vscode,type=bind,consistency=cached"

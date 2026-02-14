@@ -43,3 +43,10 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Environment and credentials
+.env
+.env.local
+*.pem
+*.key
+.git-credentials

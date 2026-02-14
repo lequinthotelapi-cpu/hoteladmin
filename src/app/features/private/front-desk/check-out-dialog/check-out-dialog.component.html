@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>
+  <mat-icon>logout</mat-icon>
+  Check-out
+</h2>
+
+<mat-dialog-content>
+  <div class="booking-summary">
+    <h3>Resumen de la Estadía</h3>
+    
+    <div class="info-row">
+      <mat-icon>confirmation_number</mat-icon>
+      <div>
+        <div class="label">Número de Reserva</div>
+        <div class="value">{{ booking.bookingNumber }}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <mat-icon>person</mat-icon>
+      <div>
+        <div class="label">Huésped</div>
+        <div class="value">{{ booking.guestName }}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <mat-icon>hotel</mat-icon>
+      <div>
+        <div class="label">Habitación</div>
+        <div class="value">{{ booking.roomNumber }} - {{ booking.roomType }}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <mat-icon>event</mat-icon>
+      <div>
+        <div class="label">Estadía</div>
+        <div class="value">{{ booking.checkInDate | date }} - {{ booking.checkOutDate | date }} ({{ booking.nights }} noches)</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <mat-icon>attach_money</mat-icon>
+      <div>
+        <div class="label">Total</div>
+        <div class="value">{{ booking.totalPrice | currency }}</div>
+      </div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="confirmation-message">
+    <mat-icon color="warn">info</mat-icon>
+    <p>Al confirmar el check-out, la habitación cambiará a estado "Limpieza" y se creará una tarea de housekeeping</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="warn" (click)="confirmCheckOut()" [disabled]="loading">
+    <mat-icon *ngIf="!loading">check</mat-icon>
+    <mat-icon *ngIf="loading" class="spinning">hourglass_empty</mat-icon>
+    Confirmar Check-out
+  </button>
+</mat-dialog-actions>

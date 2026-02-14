@@ -1,0 +1,143 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "fury": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "prefix": "fury",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/fury",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "polyfills": "src/polyfills.ts",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles",
+                "node_modules"
+              ]
+            },
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/_redirects",
+              "src/.htaccess",
+              "src/firebase-messaging-sw.js"
+            ],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/sweetalert2/dist/sweetalert2.min.css",
+              "node_modules/angular-calendar/css/angular-calendar.css"
+            ],
+            "scripts": [],
+            "baseHref": "/",
+            "allowedCommonJsDependencies": [
+              "quill",
+              "can-use-dom",
+              "core-js",
+              "lodash.debounce",
+              "lodash.memoize",
+              "lodash.throttle",
+              "moment",
+              "@fortawesome/free-brands-svg-icons",
+              "sweetalert2"
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "25kb"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "analyze": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true,
+              "statsJson": true
+            }
+          },
+          "defaultConfiguration": ""
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "fury:build",
+            "host": "0.0.0.0"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "fury:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "fury:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "karmaConfig": "./karma.conf.js",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.spec.json",
+            "scripts": [],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/manifest.json",
+              "src/manifest.json"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "9b077664-d811-4845-8011-35d8ef168520"
+  }
+}

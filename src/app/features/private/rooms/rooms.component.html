@@ -1,0 +1,23 @@
+<div class="page-container">
+  <div class="page-header">
+    <fury-breadcrumbs current="Habitaciones"></fury-breadcrumbs>
+    
+    <div class="header-actions">
+      <mat-button-toggle-group [value]="viewMode" (change)="toggleView($event.value)">
+        <mat-button-toggle value="grid">
+          <mat-icon>grid_view</mat-icon>
+          Vista Grid
+        </mat-button-toggle>
+        <mat-button-toggle value="list">
+          <mat-icon>view_list</mat-icon>
+          Vista Tabla
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <fury-rooms-grid *ngIf="viewMode === 'grid'"></fury-rooms-grid>
+    <fury-rooms-list *ngIf="viewMode === 'list'"></fury-rooms-list>
+  </div>
+</div>

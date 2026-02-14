@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>Generar Factura</h2>
+
+<mat-dialog-content>
+  <div class="account-info">
+    <p><strong>Cuenta:</strong> {{ data.account.bookingNumber }}</p>
+    <p><strong>Habitación:</strong> {{ data.account.roomNumber }}</p>
+    <p><strong>Total:</strong> {{ data.account.total | currency }}</p>
+  </div>
+
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del Cliente</mat-label>
+      <input matInput formControlName="clientName" required>
+      <mat-error *ngIf="form.get('clientName')?.hasError('required')">
+        Campo requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>NIT / RFC / Identificación Fiscal</mat-label>
+      <input matInput formControlName="clientTaxId" required>
+      <mat-error *ngIf="form.get('clientTaxId')?.hasError('required')">
+        Campo requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dirección (Opcional)</mat-label>
+      <input matInput formControlName="clientAddress">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email (Opcional)</mat-label>
+      <input matInput type="email" formControlName="clientEmail">
+      <mat-error *ngIf="form.get('clientEmail')?.hasError('email')">
+        Email inválido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Teléfono (Opcional)</mat-label>
+      <input matInput formControlName="clientPhone">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="processing">
+    Cancelar
+  </button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="processing || form.invalid">
+    <mat-icon *ngIf="!processing">receipt</mat-icon>
+    <mat-spinner *ngIf="processing" diameter="20"></mat-spinner>
+    Generar Factura
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,69 @@
+.tasks-list-container {
+  .toolbar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+
+    .search-field {
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .filter-field {
+      width: 200px;
+    }
+  }
+
+  mat-card {
+    padding: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  .tasks-table {
+    width: 100%;
+
+    th {
+      font-weight: 600;
+      color: #64748b;
+      background: #f8fafc;
+    }
+
+    td, th {
+      padding: 16px;
+    }
+
+    .priority-badge, .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .delete-action {
+    color: #ef4444;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+}

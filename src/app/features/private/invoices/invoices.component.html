@@ -1,0 +1,108 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Facturas</h1>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilters()" 
+                 placeholder="Número, cliente, NIT...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-button-toggle-group [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <mat-button-toggle value="all">Todas</mat-button-toggle>
+          <mat-button-toggle value="active">Activas</mat-button-toggle>
+          <mat-button-toggle value="cancelled">Canceladas</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla -->
+  <mat-card>
+    <mat-card-content>
+      <table mat-table [dataSource]="filteredInvoices" class="invoices-table">
+        
+        <ng-container matColumnDef="invoiceNumber">
+          <th mat-header-cell *matHeaderCellDef>Número</th>
+          <td mat-cell *matCellDef="let invoice">
+            <strong>{{ invoice.invoiceNumber }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="clientName">
+          <th mat-header-cell *matHeaderCellDef>Cliente</th>
+          <td mat-cell *matCellDef="let invoice">{{ invoice.clientName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="clientTaxId">
+          <th mat-header-cell *matHeaderCellDef>NIT/RFC</th>
+          <td mat-cell *matCellDef="let invoice">{{ invoice.clientTaxId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let invoice">
+            <mat-chip [color]="invoice.type === 'guest_account' ? 'accent' : 'primary'">
+              {{ getTypeLabel(invoice.type) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let invoice">
+            <strong>{{ invoice.total | currency }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="issuedAt">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let invoice">{{ invoice.issuedAt | date:'short' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let invoice">
+            <mat-chip [color]="getStatusColor(invoice.status)">
+              {{ invoice.status === 'active' ? 'Activa' : 'Cancelada' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let invoice">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewInvoice(invoice)">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver Detalle</span>
+              </button>
+              <button mat-menu-item (click)="cancelInvoice(invoice)" 
+                      [disabled]="invoice.status === 'cancelled'">
+                <mat-icon>cancel</mat-icon>
+                <span>Cancelar</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="filteredInvoices.length === 0" class="no-data">
+        <mat-icon>receipt_long</mat-icon>
+        <p>No hay facturas para mostrar</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

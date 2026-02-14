@@ -1,0 +1,34 @@
+<div class="housekeeping-container">
+  <div class="header">
+    <h1>
+      <mat-icon>cleaning_services</mat-icon>
+      Housekeeping
+    </h1>
+  </div>
+
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" animationDuration="300ms">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </ng-template>
+      <app-housekeeping-dashboard></app-housekeeping-dashboard>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>list</mat-icon>
+        Todas las Tareas
+      </ng-template>
+      <app-housekeeping-tasks-list></app-housekeeping-tasks-list>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>people</mat-icon>
+        Por Empleado
+      </ng-template>
+      <app-housekeeping-by-employee></app-housekeeping-by-employee>
+    </mat-tab>
+  </mat-tab-group>
+</div>

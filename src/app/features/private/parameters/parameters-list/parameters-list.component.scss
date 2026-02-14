@@ -1,0 +1,32 @@
+.parameters-table {
+  width: 100%;
+}
+
+.clickable {
+  cursor: pointer;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.icon-cell {
+  width: 60px;
+  text-align: center;
+}
+
+.actions-cell {
+  width: 80px;
+  text-align: center;
+}
+
+.description {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+.count-chip {
+  background-color: #2196f3 !important;
+  color: white !important;
+  font-size: 12px;
+}

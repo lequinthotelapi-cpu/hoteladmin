@@ -1,0 +1,22 @@
+.page-container {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+mat-button-toggle-group {
+  mat-icon {
+    margin-right: 8px;
+  }
+}

@@ -1,0 +1,64 @@
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.list-tools {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex: 1;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 400px;
+  
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.status-filter {
+  min-width: 150px;
+}
+
+.bookings-table {
+  width: 100%;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  &.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  
+  &.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  
+  &.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.badge-secondary {
+    background: #f3f4f6;
+    color: #374151;
+  }
+}

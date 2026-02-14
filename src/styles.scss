@@ -1,0 +1,248 @@
+/* You can add global styles to this file, and also import other style files */
+@import "./@fury/styles/core";
+@import "./app/app.theme";
+
+/* SweetAlert2 backdrop - Ocean theme */
+.swal2-container {
+  background-color: rgba(17, 93, 140, 0.4) !important;
+}
+
+.swal2-backdrop-show {
+  background: rgba(17, 93, 140, 0.4) !important;
+}
+
+/* ===== BUTTON FIXES ===== */
+.mat-mdc-button .mdc-button__label,
+.mat-mdc-raised-button .mdc-button__label,
+.mat-mdc-unelevated-button .mdc-button__label,
+.mat-mdc-outlined-button .mdc-button__label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  z-index: 1 !important;
+}
+
+.mat-mdc-button mat-icon,
+.mat-mdc-raised-button mat-icon,
+.mat-mdc-unelevated-button mat-icon,
+.mat-mdc-outlined-button mat-icon {
+  margin: 0 !important;
+}
+
+/* Button theme colors */
+.fury-ocean {
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #115D8C !important;
+    --mdc-protected-button-label-text-color: white !important;
+    
+    &:hover {
+      --mdc-protected-button-container-color: #0e4f75 !important;
+    }
+  }
+  
+  .mat-mdc-raised-button.mat-accent {
+    --mdc-protected-button-container-color: #9498F2 !important;
+    --mdc-protected-button-label-text-color: white !important;
+    
+    &:hover {
+      --mdc-protected-button-container-color: #777bec !important;
+    }
+  }
+  
+  .mat-mdc-button.mat-primary {
+    --mdc-text-button-label-text-color: #115D8C !important;
+    
+    &:hover {
+      background: rgba(17, 93, 140, 0.08) !important;
+    }
+  }
+  
+  .mat-mdc-outlined-button.mat-primary {
+    --mdc-outlined-button-label-text-color: #115D8C !important;
+    --mdc-outlined-button-outline-color: #115D8C !important;
+    
+    &:hover {
+      background: rgba(17, 93, 140, 0.08) !important;
+    }
+  }
+}
+
+/* Button toggle group */
+.mat-button-toggle-group {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+
+.fury-ocean .mat-button-toggle {
+  border: none !important;
+  
+  &.mat-button-toggle-checked {
+    background: #115D8C !important;
+    color: white !important;
+  }
+  
+  &:not(.mat-button-toggle-checked) {
+    background: white !important;
+    color: #424242 !important;
+    
+    &:hover {
+      background: rgba(17, 93, 140, 0.08) !important;
+    }
+  }
+}
+
+/* ===== OCEAN DARK THEME FORM FIELDS ===== */
+.fury-ocean-dark {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    &.mat-form-field-appearance-outline {
+      .mat-mdc-text-field-wrapper {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+      
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+      }
+      
+      &.mat-focused {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #05DBF2 !important;
+        }
+      }
+    }
+  }
+  
+  .mat-mdc-select-value,
+  .mat-mdc-input-element {
+    color: #F0F1F2 !important;
+  }
+  
+  .mat-mdc-form-field-label {
+    color: rgba(240, 241, 242, 0.7) !important;
+  }
+}
+
+/* ===== STEPPER IMPROVEMENTS ===== */
+.mat-stepper-horizontal, .mat-stepper-vertical {
+  background: transparent;
+}
+
+.mat-horizontal-stepper-header-container {
+  margin-bottom: 32px !important;
+  padding: 16px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.mat-horizontal-content-container {
+  padding: 24px 16px !important;
+}
+
+.mat-vertical-content-container {
+  padding: 0 24px 24px 24px !important;
+}
+
+.mat-step-header {
+  padding: 8px 16px !important;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255,255,255,0.5) !important;
+  }
+}
+
+/* ===== TAB IMPROVEMENTS ===== */
+.mat-mdc-tab-body-content {
+  padding: 24px 16px !important;
+}
+
+.mat-mdc-tab-group {
+  .mat-mdc-tab-header {
+    margin-bottom: 24px !important;
+    border-bottom: 2px solid #e0e0e0 !important;
+  }
+  
+  .mat-mdc-tab {
+    min-width: 120px !important;
+    padding: 0 24px !important;
+    height: 56px !important;
+  }
+}
+
+/* ===== DIALOG IMPROVEMENTS ===== */
+.mat-mdc-dialog-container .mdc-dialog__container {
+  padding: 0 !important;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.mat-mdc-dialog-title {
+  margin: 0 !important;
+  padding: 20px 24px !important;
+  background: linear-gradient(135deg, #115D8C 0%, #0B3B59 100%) !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  
+  mat-icon {
+    color: white !important;
+    font-size: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+    line-height: 22px !important;
+    vertical-align: middle !important;
+  }
+}
+
+.mat-mdc-dialog-content {
+  margin: 0 !important;
+  padding: 24px !important;
+  max-height: 70vh !important;
+}
+
+.mat-mdc-dialog-actions {
+  margin: 0 !important;
+  padding: 16px 24px !important;
+  background: linear-gradient(to top, #f5f5f5 0%, #fafafa 100%) !important;
+  border-top: 1px solid #e0e0e0 !important;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05) !important;
+  min-height: 64px !important;
+  
+  .mat-mdc-button:not(.mat-mdc-raised-button) {
+    background: #f5f5f5 !important;
+    border: 1px solid #e0e0e0 !important;
+    --mdc-text-button-label-text-color: #424242 !important;
+    
+    &:hover {
+      background: #eeeeee !important;
+    }
+  }
+  
+  .mat-mdc-raised-button {
+    background: linear-gradient(135deg, #9498F2 0%, #777bec 100%) !important;
+    color: white !important;
+    --mdc-protected-button-label-text-color: white !important;
+    box-shadow: 0 2px 4px rgba(148, 152, 242, 0.3) !important;
+    
+    &:hover {
+      box-shadow: 0 4px 8px rgba(148, 152, 242, 0.4) !important;
+    }
+  }
+}

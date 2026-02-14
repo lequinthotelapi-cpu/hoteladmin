@@ -1,0 +1,177 @@
+<h2 mat-dialog-title>{{ isCreateMode() ? 'Crear Empleado' : 'Editar Empleado' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <!-- Avatar -->
+    <div class="avatar-section">
+      <div *ngIf="avatarPreview" class="avatar-preview">
+        <img [src]="avatarPreview" alt="Avatar">
+        <button mat-icon-button (click)="removeAvatar()" class="remove-avatar" type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="!avatarPreview" class="avatar-placeholder">
+        <mat-icon>person</mat-icon>
+      </div>
+      <input type="file" #fileInput accept="image/*" (change)="onFileSelected($event)" style="display: none">
+      <button mat-raised-button (click)="fileInput.click()" type="button">
+        <mat-icon>upload</mat-icon>
+        {{ avatarPreview ? 'Cambiar Foto' : 'Subir Foto' }}
+      </button>
+    </div>
+
+    <!-- Información Personal -->
+    <h3>Información Personal</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombres</mat-label>
+          <input matInput formControlName="firstName" required>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="lastName" required>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6" *ngIf="isCreateMode()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" required>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Documento</mat-label>
+          <input matInput formControlName="document" required>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="gender" required>
+            <mat-option *ngFor="let gender of genders" [value]="gender.value">
+              {{ gender.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="phone" required>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Información Laboral -->
+    <h3>Información Laboral</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rol del Sistema</mat-label>
+          <mat-select formControlName="role" required>
+            <mat-option *ngFor="let role of employeeRoles" [value]="role.value">
+              {{ role.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Cargo</mat-label>
+          <mat-select formControlName="position" required>
+            <mat-option *ngFor="let position of employeePositions" [value]="position.value">
+              {{ position.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Departamento</mat-label>
+          <mat-select formControlName="department" required>
+            <mat-option *ngFor="let dept of employeeDepartments" [value]="dept.value">
+              {{ dept.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Salario</mat-label>
+          <input matInput type="number" formControlName="salary" required min="0">
+          <span matPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha de Contratación</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="hireDate" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-slide-toggle formControlName="active" color="primary">
+          Empleado Activo
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <!-- Contacto de Emergencia -->
+    <h3>Contacto de Emergencia</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="emergencyContactName" required>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="emergencyContactPhone" required>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Relación</mat-label>
+          <input matInput formControlName="emergencyContactRelationship" required>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="isSubmitting">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid || isSubmitting">
+    {{ isSubmitting ? 'Guardando...' : (isCreateMode() ? 'Crear' : 'Actualizar') }}
+  </button>
+</mat-dialog-actions>

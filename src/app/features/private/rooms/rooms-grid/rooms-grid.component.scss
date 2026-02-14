@@ -1,0 +1,211 @@
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  align-items: start;
+  grid-auto-rows: 1fr;
+}
+
+.room-card {
+  position: relative;
+  border-radius: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  // Capa blanca opaca (entre el color y el gris)
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    border-radius: 24px;
+    z-index: 0;
+  }
+  
+  .card-content {
+    background: var(--status-bg, white);
+    border-radius: 24px;
+    padding: 16px 16px 0 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3),
+                0 8px 20px rgba(0, 0, 0, 0.35);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 5px rgba(0, 0, 0, 0.35),
+                  0 12px 25px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  // Capa gris layered
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    transform: translate(0, 6px);
+    z-index: -1;
+  }
+
+  &.inactive .card-content {
+    opacity: 0.6;
+    
+    &::after {
+      content: 'INACTIVA';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #9E9E9E;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+.accent-bar {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 120px;
+  border-radius: 16px 0 0 16px;
+  background: var(--status-color, #6366f1);
+  box-shadow: inset -2px 0 6px rgba(0, 0, 0, 0.15),
+              inset 2px 0 6px rgba(255, 255, 255, 0.1);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.room-header-left {
+  flex: 1;
+}
+
+.room-number {
+  font-size: 36px;
+  font-weight: 900;
+  color: #1a1c26;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.room-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.icon-container {
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), 
+              inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.room-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 60px;
+}
+
+.room-subtitle {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 8px 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.room-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
+  margin-top: auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  button {
+    width: 36px;
+    height: 36px;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(0, 0, 0, 0.5);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+}
+
+mat-tab-group {
+  ::ng-deep .mat-tab-label {
+    min-width: 120px;
+  }
+  
+  ::ng-deep .mat-tab-body-content {
+    overflow: visible !important;
+  }
+}

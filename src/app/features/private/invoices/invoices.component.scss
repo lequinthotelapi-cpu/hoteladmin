@@ -1,0 +1,49 @@
+.page-container {
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.filters-card {
+  margin-bottom: 20px;
+}
+
+.filters-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 400px;
+}
+
+mat-button-toggle-group {
+  margin-bottom: 1.34375em;
+}
+
+.invoices-table {
+  width: 100%;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: rgba(0, 0, 0, 0.54);
+  
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+}

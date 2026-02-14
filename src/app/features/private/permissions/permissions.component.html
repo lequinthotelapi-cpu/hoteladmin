@@ -1,0 +1,69 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Gestión de Permisos por Rol</h1>
+    <p>Configura qué rutas puede acceder cada rol</p>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutGap="24px">
+        <!-- Selector de Rol -->
+        <div fxFlex="30">
+          <h3>Roles</h3>
+          <mat-selection-list [multiple]="false">
+            <mat-list-option 
+              *ngFor="let role of roles" 
+              [selected]="selectedRole?.role === role.role"
+              (click)="selectRole(role)">
+              <div fxLayout="column">
+                <span class="role-name">{{ role.displayName }}</span>
+                <span class="role-code">{{ role.role }}</span>
+              </div>
+            </mat-list-option>
+          </mat-selection-list>
+        </div>
+
+        <!-- Permisos del Rol -->
+        <div fxFlex="70">
+          <div *ngIf="selectedRole" fxLayout="column" fxLayoutGap="16px">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <h3>Permisos de {{ selectedRole.displayName }}</h3>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                (click)="saveChanges()" 
+                [disabled]="loading || selectedRole.role === 'superadmin'">
+                <mat-icon>save</mat-icon>
+                Guardar Cambios
+              </button>
+            </div>
+
+            <mat-card *ngIf="selectedRole.role === 'superadmin'" class="info-card">
+              <mat-card-content>
+                <mat-icon>info</mat-icon>
+                El rol Superadmin tiene acceso a todas las rutas por defecto.
+              </mat-card-content>
+            </mat-card>
+
+            <div *ngFor="let group of getGroupKeys()" class="route-group">
+              <h4>{{ group }}</h4>
+              <mat-checkbox 
+                *ngFor="let route of routesByGroup[group]"
+                [checked]="isRouteEnabled(route.path)"
+                [disabled]="selectedRole.role === 'superadmin'"
+                (change)="toggleRoute(route.path)"
+                class="route-checkbox">
+                {{ route.label }}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <div *ngIf="!selectedRole" fxLayout="column" fxLayoutAlign="center center" style="height: 400px;">
+            <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: #ccc;">lock</mat-icon>
+            <p style="color: #999;">Selecciona un rol para ver sus permisos</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

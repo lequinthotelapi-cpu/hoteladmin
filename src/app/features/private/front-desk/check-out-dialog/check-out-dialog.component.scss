@@ -1,0 +1,62 @@
+.booking-summary {
+  padding: 16px 0;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  mat-icon {
+    color: rgba(0, 0, 0, 0.54);
+    margin-top: 2px;
+  }
+
+  .label {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.54);
+    margin-bottom: 4px;
+  }
+
+  .value {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+mat-divider {
+  margin: 16px 0;
+}
+
+.confirmation-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #ffebee;
+  border-radius: 8px;
+  margin-top: 16px;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}

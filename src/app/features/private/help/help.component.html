@@ -1,0 +1,220 @@
+<div class="page-container">
+  <h1>Ayuda - Sistema de Gestión Hotelera</h1>
+  <p class="subtitle">Guía de flujos operativos y módulos disponibles</p>
+
+  <!-- Flujos Operativos -->
+  <mat-card class="workflow-card">
+    <mat-card-header>
+      <mat-card-title><mat-icon>timeline</mat-icon> Flujos Operativos del Sistema</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      
+      <!-- Flujo de Reservas y Check-in/Check-out -->
+      <div class="workflow-section" *ngIf="hasAnyModule(['Reservas', 'Recepción', 'Habitaciones', 'Cuentas'])">
+        <h3><mat-icon>event</mat-icon> Flujo de Reservas y Estadía</h3>
+        <div class="workflow-steps">
+          <div class="step" *ngIf="hasModule('Reservas')">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <strong>Crear Reserva</strong>
+              <p>Módulo: <em>Reservas</em> → Seleccionar habitación, fechas, huésped y confirmar disponibilidad</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Recepción')">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <strong>Check-in</strong>
+              <p>Módulo: <em>Recepción</em> → Habitación cambia a "Ocupada", se crea cuenta (folio) automáticamente con cargo de alojamiento</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Cuentas')">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <strong>Gestión de Cuenta</strong>
+              <p>Módulo: <em>Cuentas</em> → Agregar cargos (servicios, minibar, etc.) y registrar pagos durante la estadía</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Recepción')">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <strong>Check-out</strong>
+              <p>Módulo: <em>Recepción</em> → Habitación cambia a "Sucia", cerrar cuenta cuando balance = 0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo de Housekeeping -->
+      <div class="workflow-section" *ngIf="hasAnyModule(['Housekeeping', 'Habitaciones'])">
+        <h3><mat-icon>cleaning_services</mat-icon> Flujo de Limpieza (Housekeeping)</h3>
+        <div class="workflow-steps">
+          <div class="step" *ngIf="hasModule('Housekeeping')">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <strong>Asignar Tarea</strong>
+              <p>Módulo: <em>Housekeeping</em> → Crear tarea, asignar empleado, tipo y prioridad. Habitación cambia a "En Limpieza"</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Housekeeping')">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <strong>Completar Tarea</strong>
+              <p>Módulo: <em>Housekeeping</em> o <em>Habitaciones</em> → Registrar duración, notas y marcar si requiere mantenimiento</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Habitaciones')">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <strong>Habitación Disponible</strong>
+              <p>Módulo: <em>Habitaciones</em> → Al completar, habitación cambia a "Disponible" (o "Mantenimiento" si se marcó)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo Financiero -->
+      <div class="workflow-section" *ngIf="hasAnyModule(['Caja', 'POS', 'Cuentas', 'Facturas', 'Movimientos'])">
+        <h3><mat-icon>account_balance_wallet</mat-icon> Flujo Financiero</h3>
+        <div class="workflow-steps">
+          <div class="step" *ngIf="hasModule('Caja')">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <strong>Abrir Caja</strong>
+              <p>Módulo: <em>Caja</em> → Registrar monto inicial para comenzar operaciones del día</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('POS')">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <strong>Registrar Ventas</strong>
+              <p>Módulo: <em>POS</em> → Venta directa (requiere caja abierta) o cargar a habitación (sin caja)</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Cuentas')">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <strong>Registrar Pagos</strong>
+              <p>Módulo: <em>Cuentas</em> → Aplicar pagos a folios de huéspedes (efectivo, tarjeta, transferencia)</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Facturas')">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <strong>Generar Factura</strong>
+              <p>Módulo: <em>Facturas</em> → Solo si cuenta cerrada y balance = 0. Genera PDF e imprime</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Caja')">
+            <span class="step-number">5</span>
+            <div class="step-content">
+              <strong>Cerrar Caja</strong>
+              <p>Módulo: <em>Caja</em> → Cuadrar efectivo, registrar diferencias y cerrar turno</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo de Inventario -->
+      <div class="workflow-section" *ngIf="hasAnyModule(['Productos', 'Inventario', 'POS'])">
+        <h3><mat-icon>inventory_2</mat-icon> Flujo de Inventario</h3>
+        <div class="workflow-steps">
+          <div class="step" *ngIf="hasModule('Productos')">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <strong>Crear Producto</strong>
+              <p>Módulo: <em>Productos</em> → Definir nombre, categoría, precio y stock inicial</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('Inventario')">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <strong>Ajustar Stock</strong>
+              <p>Módulo: <em>Inventario</em> → Registrar entradas (compras) o salidas (mermas, consumo interno)</p>
+            </div>
+          </div>
+          <div class="step" *ngIf="hasModule('POS')">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <strong>Venta Automática</strong>
+              <p>Módulo: <em>POS</em> → Al vender, el stock se reduce automáticamente</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo de Reportes -->
+      <div class="workflow-section" *ngIf="hasModule('Reportes')">
+        <h3><mat-icon>assessment</mat-icon> Flujo de Análisis y Reportes</h3>
+        <div class="workflow-steps">
+          <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <strong>Dashboard Financiero</strong>
+              <p>Módulo: <em>Reportes</em> → Ver KPIs: Ingresos, Ocupación, RevPAR, ADR, Por Cobrar, Efectivo en Caja</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <strong>Filtrar Período</strong>
+              <p>Módulo: <em>Reportes</em> → Seleccionar rango de fechas (Hoy, Semana, Mes, Año, Personalizado)</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <strong>Analizar Gráficos</strong>
+              <p>Módulo: <em>Reportes</em> → Ingresos por día (línea) e Ingresos por fuente (pastel)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Módulos Disponibles -->
+  <mat-card class="modules-card">
+    <mat-card-header>
+      <mat-card-title><mat-icon>apps</mat-icon> Módulos Disponibles para tu Rol</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="modules-grid">
+        <div *ngFor="let module of modules" class="module-item">
+          <mat-icon>{{ module.icon }}</mat-icon>
+          <div>
+            <strong>{{ module.name }}</strong>
+            <p>{{ module.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Información General -->
+  <mat-card class="info-card">
+    <mat-card-header>
+      <mat-card-title><mat-icon>info</mat-icon> Información General</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <h4>Sistema de Gestión Hotelera - Le Quint Hotel</h4>
+      <p>Sistema completo de administración hotelera con módulos integrados para operaciones, finanzas, inventario y administración.</p>
+      
+      <h4>Características Principales:</h4>
+      <ul>
+        <li><strong>Gestión de Reservas:</strong> Control completo de bookings con prevención de overbooking</li>
+        <li><strong>Check-in/Check-out:</strong> Proceso automatizado con generación de folios</li>
+        <li><strong>Housekeeping:</strong> Asignación y seguimiento de tareas de limpieza</li>
+        <li><strong>POS Integrado:</strong> Punto de venta con carga a habitación</li>
+        <li><strong>Facturación:</strong> Generación de facturas con PDF e impresión directa</li>
+        <li><strong>Reportes Financieros:</strong> KPIs hoteleros (RevPAR, ADR, Ocupación)</li>
+        <li><strong>Control de Inventario:</strong> Gestión de stock y movimientos</li>
+        <li><strong>Notificaciones:</strong> Sistema en tiempo real con Firestore</li>
+        <li><strong>Permisos por Rol:</strong> Control de acceso granular</li>
+      </ul>
+
+      <h4>Soporte:</h4>
+      <p>Para asistencia técnica o consultas, contacta al administrador del sistema.</p>
+    </mat-card-content>
+  </mat-card>
+</div>

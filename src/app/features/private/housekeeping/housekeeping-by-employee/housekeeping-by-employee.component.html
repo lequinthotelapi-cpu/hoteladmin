@@ -1,0 +1,79 @@
+<div class="by-employee-container" *ngIf="!loading">
+  <div class="empty-state" *ngIf="employeesWithTasks.length === 0">
+    <mat-icon>person_off</mat-icon>
+    <p>No hay housekeepers registrados</p>
+  </div>
+
+  <mat-tab-group *ngIf="employeesWithTasks.length > 0">
+    <mat-tab *ngFor="let item of employeesWithTasks">
+      <ng-template mat-tab-label>
+        <div class="employee-tab-label">
+          <span>{{ item.employee.firstName }} {{ item.employee.lastName }}</span>
+          <span class="task-count" *ngIf="item.tasks.length > 0">{{ item.tasks.length }}</span>
+        </div>
+      </ng-template>
+
+      <div class="employee-content">
+        <div class="employee-stats">
+          <div class="stat-card pending">
+            <mat-icon>pending_actions</mat-icon>
+            <div>
+              <h3>{{ item.pendingCount }}</h3>
+              <p>Pendientes</p>
+            </div>
+          </div>
+          <div class="stat-card in-progress">
+            <mat-icon>hourglass_empty</mat-icon>
+            <div>
+              <h3>{{ item.inProgressCount }}</h3>
+              <p>En Progreso</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tasks-grid" *ngIf="item.tasks.length > 0; else noTasks">
+          <mat-card *ngFor="let task of item.tasks" class="task-card">
+            <div class="task-header">
+              <h3>Habitación {{ task.roomNumber }}</h3>
+              <span class="status-badge" [style.background-color]="getStatusColor(task.status)">
+                {{ task.status === 'pending' ? 'Pendiente' : 'En Progreso' }}
+              </span>
+            </div>
+            <div class="task-details">
+              <div class="detail-item">
+                <mat-icon>layers</mat-icon>
+                <span>Piso {{ task.floor }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>category</mat-icon>
+                <span>{{ task.taskType }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ task.scheduledDate | date:'short' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="priority-badge" [style.background-color]="getPriorityColor(task.priority)">
+                  {{ task.priority }}
+                </span>
+              </div>
+            </div>
+            <p class="task-notes" *ngIf="task.notes">{{ task.notes }}</p>
+          </mat-card>
+        </div>
+
+        <ng-template #noTasks>
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <p>No hay tareas asignadas</p>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <mat-icon>hourglass_empty</mat-icon>
+  <p>Cargando...</p>
+</div>

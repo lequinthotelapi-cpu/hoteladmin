@@ -1,0 +1,262 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ mode === 'create' ? 'Crear Huésped' : 'Editar Huésped' }}</h2>
+
+  <mat-dialog-content>
+    <mat-horizontal-stepper #stepper="matHorizontalStepper" [linear]="false">
+      
+      <mat-step [stepControl]="form">
+        <form [formGroup]="form">
+          <ng-template matStepLabel>Información Básica</ng-template>
+
+          <div class="heading">Información Básica del Huésped</div>
+          <div class="subheading">Complete los datos principales del huésped.</div>
+
+          <div class="content" fxLayout="column" fxLayoutGap="16px">
+            <div class="photo-section" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px">
+              <div class="photo-preview">
+                <img [src]="photoPreview || 'assets/img/avatars/default.jpg'" alt="Foto">
+              </div>
+              <div fxLayout="column" fxLayoutGap="8px">
+                <input type="file" #photoInput accept="image/*" (change)="onPhotoSelected($event)" style="display: none">
+                <button mat-raised-button type="button" (click)="photoInput.click()">
+                  <mat-icon>photo_camera</mat-icon>
+                  Seleccionar Foto
+                </button>
+                <button mat-raised-button type="button" color="warn" (click)="removePhoto()" *ngIf="photoPreview">
+                  <mat-icon>delete</mat-icon>
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="firstName" required>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="lastName" required>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email" required>
+                <mat-error>Email inválido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="phone" required>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Tipo de Documento</mat-label>
+                <mat-select formControlName="documentType" required>
+                  <mat-option *ngFor="let type of documentTypes" [value]="type.value">
+                    {{ type.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Número de Documento</mat-label>
+                <input matInput formControlName="documentNumber" required>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Tipo de Huésped</mat-label>
+                <mat-select formControlName="guestType" required>
+                  <mat-option *ngFor="let type of guestTypes" [value]="type.value">
+                    {{ type.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Estado</mat-label>
+                <mat-select formControlName="status" required>
+                  <mat-option *ngFor="let status of guestStatuses" [value]="status.value">
+                    {{ status.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>Campo requerido</mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-checkbox formControlName="vip">Huésped VIP</mat-checkbox>
+          </div>
+
+          <div class="actions" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="8px">
+            <button mat-raised-button color="primary" matStepperNext type="button">SIGUIENTE</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="form">
+        <form [formGroup]="form">
+          <ng-template matStepLabel>Información Adicional</ng-template>
+
+          <div class="heading">Información Adicional</div>
+          <div class="subheading">Datos complementarios del huésped (opcional).</div>
+
+          <div class="content" fxLayout="column" fxLayoutGap="16px">
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dateOfBirth">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Género</mat-label>
+                <mat-select formControlName="gender">
+                  <mat-option *ngFor="let gender of genders" [value]="gender.value">
+                    {{ gender.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>País de Origen</mat-label>
+                <input matInput formControlName="countryOfOrigin" [matAutocomplete]="autoOrigin">
+                <mat-autocomplete #autoOrigin="matAutocomplete" [displayWith]="displayCountry.bind(this)">
+                  <mat-option *ngFor="let country of filteredCountriesOrigin | async" [value]="country.name">
+                    {{ country.unicodeFlag }} {{ country.name }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>Teléfono Alternativo</mat-label>
+                <input matInput formControlName="alternativePhone">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field fxFlex="auto">
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="address">
+            </mat-form-field>
+
+            <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+              <mat-form-field fxFlex="auto">
+                <mat-label>Ciudad</mat-label>
+                <input matInput formControlName="city">
+              </mat-form-field>
+
+              <mat-form-field fxFlex="auto">
+                <mat-label>País de Residencia</mat-label>
+                <input matInput formControlName="country" [matAutocomplete]="autoResidence">
+                <mat-autocomplete #autoResidence="matAutocomplete" [displayWith]="displayCountry.bind(this)">
+                  <mat-option *ngFor="let country of filteredCountriesResidence | async" [value]="country.name">
+                    {{ country.unicodeFlag }} {{ country.name }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field fxFlex="auto">
+              <mat-label>Notas</mat-label>
+              <textarea matInput formControlName="notes" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="actions" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="8px">
+            <button mat-button matStepperPrevious type="button">ANTERIOR</button>
+            <button mat-raised-button color="primary" matStepperNext type="button">SIGUIENTE</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step>
+        <form [formGroup]="form">
+          <ng-template matStepLabel>Acompañantes</ng-template>
+
+          <div class="heading">Acompañantes</div>
+          <div class="subheading">Agregue los acompañantes del huésped (opcional).</div>
+
+          <div class="content" fxLayout="column" fxLayoutGap="16px">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <div></div>
+              <button mat-raised-button color="primary" type="button" (click)="addCompanion()">
+                <mat-icon>add</mat-icon>
+                Agregar Acompañante
+              </button>
+            </div>
+
+            <div formArrayName="companions">
+              <div *ngFor="let companion of companions.controls; let i = index" [formGroupName]="i" class="companion-card">
+                <div fxLayout="row" fxLayoutAlign="space-between center" class="companion-header">
+                  <h4>Acompañante {{ i + 1 }}</h4>
+                  <button mat-icon-button type="button" color="warn" (click)="removeCompanion(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px">
+                  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+                    <mat-form-field fxFlex="auto">
+                      <mat-label>Nombre</mat-label>
+                      <input matInput formControlName="firstName" required>
+                      <mat-error>Campo requerido</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlex="auto">
+                      <mat-label>Apellido</mat-label>
+                      <input matInput formControlName="lastName" required>
+                      <mat-error>Campo requerido</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+                    <mat-form-field fxFlex="auto">
+                      <mat-label>Relación</mat-label>
+                      <input matInput formControlName="relationship">
+                    </mat-form-field>
+
+                    <mat-form-field fxFlex="auto">
+                      <mat-label>Edad</mat-label>
+                      <input matInput type="number" formControlName="age">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="companions.length === 0" class="no-companions">
+              <p>No hay acompañantes registrados</p>
+            </div>
+          </div>
+
+          <div class="actions" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="8px">
+            <button mat-button matStepperPrevious type="button">ANTERIOR</button>
+          </div>
+        </form>
+      </mat-step>
+
+    </mat-horizontal-stepper>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="uploadingPhoto">
+      {{ mode === 'create' ? 'Crear' : 'Guardar' }}
+    </button>
+  </mat-dialog-actions>
+</div>

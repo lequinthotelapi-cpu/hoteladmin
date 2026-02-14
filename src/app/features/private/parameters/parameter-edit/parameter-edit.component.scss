@@ -1,0 +1,124 @@
+.add-option-section {
+  margin-bottom: 24px;
+
+  h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.add-option-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: start;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.options-section {
+  margin-top: 24px;
+
+  h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &.inactive {
+    opacity: 0.5;
+    background: #f5f5f5;
+  }
+
+  &.cdk-drag-preview {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.drag-handle {
+  cursor: move;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.option-content {
+  flex: 1;
+}
+
+.option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 14px;
+  }
+
+  .option-value {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    font-family: monospace;
+  }
+}
+
+.option-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: rgba(0, 0, 0, 0.4);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+mat-divider {
+  margin: 24px 0;
+}

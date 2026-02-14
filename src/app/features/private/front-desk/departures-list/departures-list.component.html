@@ -1,0 +1,36 @@
+<div class="departures-container">
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && departures.length === 0" class="empty-state">
+    <mat-icon>event_busy</mat-icon>
+    <p>No hay salidas programadas para hoy</p>
+  </div>
+
+  <div *ngIf="!loading && departures.length > 0" class="departures-list">
+    <mat-card *ngFor="let departure of departures" class="departure-card">
+      <mat-card-content>
+        <div class="departure-info">
+          <div class="guest-info">
+            <h3>{{ departure.guestName }}</h3>
+            <p class="room-info">
+              <mat-icon>hotel</mat-icon>
+              Habitación {{ departure.roomNumber }} - {{ departure.roomType }}
+            </p>
+            <p class="stay-info">
+              <mat-icon>nights_stay</mat-icon>
+              {{ departure.nights }} noche(s) - Total: {{ departure.totalPrice | currency }}
+            </p>
+          </div>
+          <div class="actions">
+            <button mat-raised-button color="warn" (click)="openCheckOut(departure)">
+              <mat-icon>logout</mat-icon>
+              Check-out
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

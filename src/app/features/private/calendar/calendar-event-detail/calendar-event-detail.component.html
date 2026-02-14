@@ -1,0 +1,102 @@
+<h2 mat-dialog-title>
+  <mat-icon>event</mat-icon>
+  Detalles de la Reserva
+</h2>
+
+<mat-dialog-content>
+  <div class="booking-details">
+    <div class="status-badge" [style.background-color]="getStatusColor(booking.status)">
+      {{ getStatusLabel(booking.status) }}
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>confirmation_number</mat-icon>
+      <div>
+        <div class="label">Número de Reserva</div>
+        <div class="value">{{ booking.bookingNumber }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>person</mat-icon>
+      <div>
+        <div class="label">Huésped</div>
+        <div class="value">{{ booking.guestName }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>hotel</mat-icon>
+      <div>
+        <div class="label">Habitación</div>
+        <div class="value">{{ booking.roomNumber }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>event</mat-icon>
+      <div>
+        <div class="label">Check-in</div>
+        <div class="value">{{ booking.checkInDate | date:'fullDate' }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>event</mat-icon>
+      <div>
+        <div class="label">Check-out</div>
+        <div class="value">{{ booking.checkOutDate | date:'fullDate' }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>nights_stay</mat-icon>
+      <div>
+        <div class="label">Noches</div>
+        <div class="value">{{ booking.nights }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>people</mat-icon>
+      <div>
+        <div class="label">Huéspedes</div>
+        <div class="value">{{ booking.adults }} adultos, {{ booking.children }} niños</div>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>attach_money</mat-icon>
+      <div>
+        <div class="label">Total</div>
+        <div class="value">{{ booking.totalPrice | currency }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row" *ngIf="booking.specialRequests">
+      <mat-icon>note</mat-icon>
+      <div>
+        <div class="label">Solicitudes Especiales</div>
+        <div class="value">{{ booking.specialRequests }}</div>
+      </div>
+    </div>
+
+    <div class="detail-row" *ngIf="booking.notes">
+      <mat-icon>description</mat-icon>
+      <div>
+        <div class="label">Notas</div>
+        <div class="value">{{ booking.notes }}</div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cerrar</button>
+  <button mat-raised-button color="accent" (click)="confirmBooking()" *ngIf="booking.status === 'pending'">
+    Confirmar
+  </button>
+  <button mat-raised-button color="warn" (click)="cancelBooking()" *ngIf="booking.status !== 'cancelled' && booking.status !== 'checked-out'">
+    Cancelar
+  </button>
+</mat-dialog-actions>

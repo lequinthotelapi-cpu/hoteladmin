@@ -1,0 +1,12 @@
+Para recrear parámetros con estado "dirty":
+
+1. Abrir consola del navegador
+2. Ejecutar:
+   await inject(ParametersService).forceRecreateAllParameters()
+3. Recargar página
+
+O cambiar manualmente en Firestore:
+- Colección: parameters
+- Documento: roomStatuses
+- Agregar en array options:
+  { value: 'dirty', label: 'Sucia', active: true, order: 3 }

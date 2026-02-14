@@ -1,0 +1,70 @@
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+mat-dialog-content {
+  padding: 24px;
+  min-height: 400px;
+}
+
+.step-content {
+  padding: 24px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.flex-50 {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.checkbox-field {
+  margin: 16px 0;
+
+  mat-hint {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.selected-amenities {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 4px;
+
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}

@@ -1,0 +1,141 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función helper para verificar autenticación
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Función helper para verificar roles de admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+    }
+    
+    // Reglas para usuarios
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para parámetros
+    match /parameters/{parameterId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Reglas para huéspedes
+    match /guests/{guestId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para productos
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para habitaciones
+    match /rooms/{roomId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para tareas de housekeeping
+    match /housekeepingTasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para reservas
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para cuentas de huéspedes
+    match /guestAccounts/{accountId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para movimientos de inventario
+    match /inventoryMovements/{movementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if false; // No se pueden eliminar movimientos
+    }
+    
+    // Reglas para gastos
+    match /expenses/{expenseId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para cajas registradoras
+    match /cashRegisters/{cashRegisterId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para transacciones (unificadas: gastos, depósitos, retiros, ventas, pagos)
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Reglas para ventas
+    match /sales/{saleId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para facturas
+    match /invoices/{invoiceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para notificaciones
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Reglas para permisos de roles
+    match /rolePermissions/{roleId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+  }
+}

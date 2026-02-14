@@ -1,0 +1,106 @@
+.step-content {
+  padding: 20px 0;
+  min-height: 300px;
+}
+
+.step-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .col-12 {
+    flex: 1 1 100%;
+  }
+
+  .col-md-6 {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.photo-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.photo-preview {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .remove-photo {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+  }
+}
+
+.upload-placeholder {
+  width: 300px;
+  height: 300px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+::ng-deep .mat-horizontal-stepper-header-container {
+  margin-bottom: 24px;
+}
+
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+  max-width: 800px !important;
+  width: 800px !important;
+}
+
+::ng-deep .mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 0 24px !important;
+  margin: 0 !important;
+}
+
+::ng-deep .mat-dialog-title {
+  padding: 24px 24px 0 24px;
+  margin: 0 0 16px 0;
+}
+
+::ng-deep .mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}

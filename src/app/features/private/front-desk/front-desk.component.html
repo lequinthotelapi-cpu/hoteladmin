@@ -1,0 +1,21 @@
+<fury-card>
+  <fury-card-header>
+    <fury-card-header-heading>Recepción</fury-card-header-heading>
+  </fury-card-header>
+
+  <fury-card-content>
+    <mat-tab-group [(selectedIndex)]="selectedTab">
+      <mat-tab label="Llegadas">
+        <fury-arrivals-list></fury-arrivals-list>
+      </mat-tab>
+
+      <mat-tab label="Salidas">
+        <fury-departures-list></fury-departures-list>
+      </mat-tab>
+
+      <mat-tab label="En Casa">
+        <fury-in-house-list></fury-in-house-list>
+      </mat-tab>
+    </mat-tab-group>
+  </fury-card-content>
+</fury-card>

@@ -1,0 +1,16 @@
+<fury-card>
+  <fury-card-header>
+    <fury-card-header-heading>Cuentas de Huéspedes</fury-card-header-heading>
+  </fury-card-header>
+
+  <fury-card-content>
+    <mat-tab-group [(selectedIndex)]="selectedTab">
+      <mat-tab label="Cuentas Abiertas">
+        <fury-accounts-list [status]="'open'"></fury-accounts-list>
+      </mat-tab>
+      <mat-tab label="Cuentas Cerradas">
+        <fury-accounts-list [status]="'closed'"></fury-accounts-list>
+      </mat-tab>
+    </mat-tab-group>
+  </fury-card-content>
+</fury-card>

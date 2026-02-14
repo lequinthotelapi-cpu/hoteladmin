@@ -1,0 +1,68 @@
+.departures-container {
+  padding: 16px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+}
+
+.departures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.departure-card {
+  .departure-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+
+    .guest-info {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+      }
+
+      p {
+        margin: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(0, 0, 0, 0.6);
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+
+    .actions {
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}

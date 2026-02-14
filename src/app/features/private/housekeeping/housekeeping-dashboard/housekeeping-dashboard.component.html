@@ -1,0 +1,141 @@
+<div class="dashboard" *ngIf="!loading && stats">
+  <!-- KPIs principales -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card pending">
+      <mat-icon>pending_actions</mat-icon>
+      <div class="kpi-content">
+        <h2>{{ stats.totalPending }}</h2>
+        <p>Pendientes</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi-card in-progress">
+      <mat-icon>hourglass_empty</mat-icon>
+      <div class="kpi-content">
+        <h2>{{ stats.totalInProgress }}</h2>
+        <p>En Progreso</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi-card completed">
+      <mat-icon>check_circle</mat-icon>
+      <div class="kpi-content">
+        <h2>{{ stats.totalCompletedToday }}</h2>
+        <p>Completadas Hoy</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi-card overdue">
+      <mat-icon>warning</mat-icon>
+      <div class="kpi-content">
+        <h2>{{ stats.totalOverdue }}</h2>
+        <p>Vencidas</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi-card duration">
+      <mat-icon>schedule</mat-icon>
+      <div class="kpi-content">
+        <h2>{{ stats.averageDuration }} min</h2>
+        <p>Duración Promedio</p>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Tareas por prioridad -->
+  <mat-card class="stats-card">
+    <h3>
+      <mat-icon>priority_high</mat-icon>
+      Tareas por Prioridad
+    </h3>
+    <div class="priority-grid">
+      <div class="priority-item" *ngFor="let item of [
+        { key: 'urgent', label: 'Urgente', value: stats.tasksByPriority.urgent },
+        { key: 'high', label: 'Alta', value: stats.tasksByPriority.high },
+        { key: 'normal', label: 'Normal', value: stats.tasksByPriority.normal },
+        { key: 'low', label: 'Baja', value: stats.tasksByPriority.low }
+      ]">
+        <div class="priority-bar" [style.background-color]="getPriorityColor(item.key)">
+          <span class="priority-label">{{ item.label }}</span>
+          <span class="priority-value">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Tareas por tipo -->
+  <mat-card class="stats-card">
+    <h3>
+      <mat-icon>category</mat-icon>
+      Tareas por Tipo
+    </h3>
+    <div class="type-grid">
+      <div class="type-item" *ngFor="let item of [
+        { key: 'cleaning', label: 'Limpieza', value: stats.tasksByType.cleaning },
+        { key: 'maintenance', label: 'Mantenimiento', value: stats.tasksByType.maintenance },
+        { key: 'inspection', label: 'Inspección', value: stats.tasksByType.inspection },
+        { key: 'deepCleaning', label: 'Limpieza Profunda', value: stats.tasksByType.deepCleaning }
+      ]">
+        <mat-icon>{{ getTypeIcon(item.key) }}</mat-icon>
+        <div class="type-content">
+          <span class="type-label">{{ item.label }}</span>
+          <span class="type-value">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Estadísticas por empleado -->
+  <mat-card class="stats-card employees-card">
+    <h3>
+      <mat-icon>people</mat-icon>
+      Rendimiento por Empleado
+    </h3>
+    <div class="employees-table" *ngIf="stats.employeeStats.length > 0; else noEmployees">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Asignadas</th>
+            <th>En Progreso</th>
+            <th>Completadas</th>
+            <th>Tasa Completación</th>
+            <th>Duración Promedio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of stats.employeeStats">
+            <td class="employee-name">{{ employee.employeeName }}</td>
+            <td>{{ employee.tasksAssigned }}</td>
+            <td>
+              <span class="badge in-progress">{{ employee.tasksInProgress }}</span>
+            </td>
+            <td>
+              <span class="badge completed">{{ employee.tasksCompleted }}</span>
+            </td>
+            <td>
+              <div class="completion-rate">
+                <div class="rate-bar">
+                  <div class="rate-fill" [style.width.%]="employee.completionRate"></div>
+                </div>
+                <span>{{ employee.completionRate | number:'1.0-0' }}%</span>
+              </div>
+            </td>
+            <td>{{ employee.averageDuration | number:'1.0-0' }} min</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noEmployees>
+      <div class="empty-state">
+        <mat-icon>person_off</mat-icon>
+        <p>No hay empleados con tareas asignadas</p>
+      </div>
+    </ng-template>
+  </mat-card>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <mat-icon>hourglass_empty</mat-icon>
+  <p>Cargando estadísticas...</p>
+</div>

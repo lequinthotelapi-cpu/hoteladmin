@@ -1,0 +1,155 @@
+<div class="pos-container">
+  <!-- Header -->
+  <div class="pos-header">
+    <h1>Punto de Venta</h1>
+    <div class="header-info">
+      <span *ngIf="openCashRegisterId" class="cash-status open">
+        <mat-icon>check_circle</mat-icon>
+        Caja Abierta
+      </span>
+      <span *ngIf="!openCashRegisterId" class="cash-status closed">
+        <mat-icon>error</mat-icon>
+        Sin Caja Abierta
+      </span>
+      <span class="user-name">{{ currentUserName }}</span>
+    </div>
+  </div>
+
+  <div class="pos-content">
+    <!-- Alerta sin caja abierta -->
+    <div *ngIf="!openCashRegisterId" class="no-cash-alert">
+      <mat-card class="alert-card">
+        <mat-icon>error_outline</mat-icon>
+        <div class="alert-content">
+          <h2>No hay caja abierta</h2>
+          <p>Debes abrir una caja antes de poder realizar ventas</p>
+          <button mat-raised-button color="primary" routerLink="/cash-register">
+            <mat-icon>point_of_sale</mat-icon>
+            Ir a Caja
+          </button>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Productos -->
+    <div class="products-section" [class.disabled]="!openCashRegisterId">
+      <mat-card>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar productos</mat-label>
+          <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="Nombre o código...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <div class="products-grid">
+          <div *ngFor="let product of filteredProducts" 
+               class="product-card"
+               [class.disabled]="!openCashRegisterId"
+               (click)="openCashRegisterId && addToCart(product)">
+            <div class="stock-badge">{{ product.currentStock }}</div>
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-price">{{ product.price | currency }}</div>
+          </div>
+
+          <div *ngIf="filteredProducts.length === 0" class="no-products">
+            <mat-icon>inventory_2</mat-icon>
+            <p>No hay productos disponibles</p>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Carrito -->
+    <div class="cart-section">
+      <mat-card class="cart-card">
+        <h2>Carrito</h2>
+
+        <div *ngIf="cart.length === 0" class="empty-cart">
+          <mat-icon>shopping_cart</mat-icon>
+          <p>Carrito vacío</p>
+        </div>
+
+        <div *ngIf="cart.length > 0" class="cart-items">
+          <div *ngFor="let item of cart; let i = index" class="cart-item">
+            <div class="item-info">
+              <div class="item-name">{{ item.productName }}</div>
+              <div class="item-price">{{ item.price | currency }}</div>
+            </div>
+            <div class="item-controls">
+              <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="item-quantity">{{ item.quantity }}</span>
+              <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <div class="item-subtotal">{{ item.subtotal | currency }}</div>
+            <button mat-icon-button color="warn" (click)="removeFromCart(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-divider *ngIf="cart.length > 0"></mat-divider>
+
+        <div *ngIf="cart.length > 0" class="cart-totals">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span>{{ subtotal | currency }}</span>
+          </div>
+          <div class="total-row">
+            <span>IVA (19%):</span>
+            <span>{{ tax | currency }}</span>
+          </div>
+          <div class="total-row total">
+            <span>Total:</span>
+            <span>{{ total | currency }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="cart.length > 0" class="payment-section">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo de Venta</mat-label>
+            <mat-select [(ngModel)]="saleType">
+              <mat-option value="direct">Venta Directa</mat-option>
+              <mat-option value="room">Cargar a Habitación</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100" *ngIf="saleType === 'direct'">
+            <mat-label>Método de Pago</mat-label>
+            <mat-select [(ngModel)]="selectedPaymentMethod">
+              <mat-option *ngFor="let method of paymentMethods" [value]="method.value">
+                {{ method.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100" *ngIf="saleType === 'room'">
+            <mat-label>Habitación</mat-label>
+            <mat-select [(ngModel)]="selectedAccountId">
+              <mat-option *ngFor="let account of openAccounts" [value]="account.id">
+                {{ account.roomNumber }} - {{ account.guestName }}
+              </mat-option>
+            </mat-select>
+            <mat-hint *ngIf="openAccounts.length === 0">No hay habitaciones ocupadas</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="cart-actions">
+          <button mat-raised-button (click)="clearCart()" [disabled]="cart.length === 0 || processing">
+            <mat-icon>clear</mat-icon>
+            Limpiar
+          </button>
+          <button mat-raised-button color="primary" 
+                  (click)="processSale()" 
+                  [disabled]="cart.length === 0 || processing || (saleType === 'direct' && !openCashRegisterId) || (saleType === 'room' && !selectedAccountId)"
+                  [matTooltip]="saleType === 'direct' && !openCashRegisterId ? 'Debes abrir una caja primero' : (saleType === 'room' && !selectedAccountId ? 'Selecciona una habitación' : '')">
+            <mat-icon>{{ processing ? 'hourglass_empty' : (saleType === 'room' ? 'hotel' : 'shopping_cart_checkout') }}</mat-icon>
+            {{ processing ? 'Procesando...' : (saleType === 'room' ? 'Cargar a Hab.' : 'Cobrar') }}
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+<h2 mat-dialog-title>Detalle de Caja</h2>
+
+<mat-dialog-content>
+  <!-- Info de la Caja -->
+  <div class="cash-info">
+    <div class="info-item">
+      <span class="label">Apertura:</span>
+      <span class="value">{{ data.cashRegister.openedAt.toDate() | date:'short' }}</span>
+    </div>
+    <div class="info-item" *ngIf="data.cashRegister.closedAt">
+      <span class="label">Cierre:</span>
+      <span class="value">{{ data.cashRegister.closedAt.toDate() | date:'short' }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Usuario:</span>
+      <span class="value">{{ data.cashRegister.userName }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Estado:</span>
+      <mat-chip [class.open]="data.cashRegister.status === 'open'" 
+                [class.closed]="data.cashRegister.status === 'closed'">
+        {{ data.cashRegister.status === 'open' ? 'Abierta' : 'Cerrada' }}
+      </mat-chip>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Resumen por Método de Pago -->
+  <div *ngIf="!loading && paymentMethodSummary.length > 0" class="payment-summary">
+    <h3>Resumen por Método de Pago</h3>
+    <table mat-table [dataSource]="paymentMethodSummary" class="summary-table">
+      <ng-container matColumnDef="paymentMethod">
+        <th mat-header-cell *matHeaderCellDef>Método</th>
+        <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="income">
+        <th mat-header-cell *matHeaderCellDef>Ingresos</th>
+        <td mat-cell *matCellDef="let row" class="positive">+{{ row.income | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="expense">
+        <th mat-header-cell *matHeaderCellDef>Egresos</th>
+        <td mat-cell *matCellDef="let row" class="negative">-{{ row.expense | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="balance">
+        <th mat-header-cell *matHeaderCellDef>Balance</th>
+        <td mat-cell *matCellDef="let row" 
+            [class.positive]="row.balance > 0"
+            [class.negative]="row.balance < 0"
+            class="balance">
+          {{ row.balance | currency }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['paymentMethod', 'income', 'expense', 'balance']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['paymentMethod', 'income', 'expense', 'balance']"></tr>
+    </table>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Transacciones -->
+  <h3>Transacciones</h3>
+  
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && transactions.length === 0" class="no-transactions">
+    <mat-icon>receipt</mat-icon>
+    <p>No hay transacciones registradas</p>
+  </div>
+
+  <div *ngIf="!loading && transactions.length > 0" class="transactions-list">
+    <div *ngFor="let transaction of transactions" 
+         class="transaction-item"
+         [class]="getTransactionColor(transaction.type)">
+      <div class="transaction-icon">
+        <mat-icon>{{ getTransactionIcon(transaction.type) }}</mat-icon>
+      </div>
+      <div class="transaction-info">
+        <div class="transaction-description">{{ transaction.description }}</div>
+        <div class="transaction-meta">
+          <span>{{ transaction.createdAt.toDate() | date:'short' }}</span>
+          <span>•</span>
+          <span>{{ transaction.paymentMethod }}</span>
+          <span *ngIf="transaction.reference">•</span>
+          <span *ngIf="transaction.reference">Ref: {{ transaction.reference }}</span>
+        </div>
+      </div>
+      <div class="transaction-amount">
+        {{ transaction.amount | currency }}
+      </div>
+      <div class="transaction-actions">
+        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="deleteTransaction(transaction)">
+            <mat-icon color="warn">delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

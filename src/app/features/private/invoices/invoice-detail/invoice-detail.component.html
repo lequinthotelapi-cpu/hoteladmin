@@ -1,0 +1,129 @@
+<div class="page-container" *ngIf="invoice">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="page-title">Factura {{ invoice.invoiceNumber }}</h1>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="printPDF()">
+        <mat-icon>print</mat-icon>
+        Imprimir A4
+      </button>
+      <button mat-raised-button color="accent" (click)="printThermalReceipt()">
+        <mat-icon>receipt</mat-icon>
+        Imprimir 80mm
+      </button>
+      <button mat-stroked-button [matMenuTriggerFor]="downloadMenu">
+        <mat-icon>download</mat-icon>
+        Descargar
+      </button>
+      <mat-menu #downloadMenu="matMenu">
+        <button mat-menu-item (click)="downloadPDF()">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span>PDF A4</span>
+        </button>
+        <button mat-menu-item (click)="downloadThermalReceipt()">
+          <mat-icon>receipt</mat-icon>
+          <span>Ticket 80mm</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <mat-card class="invoice-card">
+    <mat-card-content>
+      <!-- Header -->
+      <div class="invoice-header">
+        <div class="invoice-info">
+          <h2>{{ invoice.invoiceNumber }}</h2>
+          <p>Fecha: {{ invoice.issuedAt | date:'medium' }}</p>
+          <mat-chip [color]="invoice.status === 'active' ? 'primary' : 'warn'">
+            {{ invoice.status === 'active' ? 'Activa' : 'Cancelada' }}
+          </mat-chip>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Client Info -->
+      <div class="section">
+        <h3>Datos del Cliente</h3>
+        <div class="client-info">
+          <p><strong>Nombre:</strong> {{ invoice.clientName }}</p>
+          <p><strong>NIT/RFC:</strong> {{ invoice.clientTaxId }}</p>
+          <p *ngIf="invoice.clientAddress"><strong>Dirección:</strong> {{ invoice.clientAddress }}</p>
+          <p *ngIf="invoice.clientEmail"><strong>Email:</strong> {{ invoice.clientEmail }}</p>
+          <p *ngIf="invoice.clientPhone"><strong>Teléfono:</strong> {{ invoice.clientPhone }}</p>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Items -->
+      <div class="section">
+        <h3>Detalle</h3>
+        <table mat-table [dataSource]="invoice.items" class="items-table">
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let item">{{ item.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+            <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="unitPrice">
+            <th mat-header-cell *matHeaderCellDef>Precio Unit.</th>
+            <td mat-cell *matCellDef="let item">{{ item.unitPrice | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="subtotal">
+            <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+            <td mat-cell *matCellDef="let item">{{ item.subtotal | currency }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="itemsColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: itemsColumns;"></tr>
+        </table>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Totals -->
+      <div class="totals">
+        <div class="total-row">
+          <span>Subtotal:</span>
+          <span>{{ invoice.subtotal | currency }}</span>
+        </div>
+        <div class="total-row">
+          <span>IVA (13%):</span>
+          <span>{{ invoice.tax | currency }}</span>
+        </div>
+        <div class="total-row total">
+          <span><strong>Total:</strong></span>
+          <span><strong>{{ invoice.total | currency }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Cancellation Info -->
+      <div class="section" *ngIf="invoice.status === 'cancelled'">
+        <mat-divider></mat-divider>
+        <h3>Información de Cancelación</h3>
+        <p><strong>Fecha:</strong> {{ invoice.cancelledAt | date:'medium' }}</p>
+        <p><strong>Motivo:</strong> {{ invoice.cancelReason }}</p>
+      </div>
+
+      <!-- Notes -->
+      <div class="section" *ngIf="invoice.notes">
+        <mat-divider></mat-divider>
+        <h3>Notas</h3>
+        <p>{{ invoice.notes }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>

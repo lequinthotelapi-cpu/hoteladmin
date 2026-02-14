@@ -1,0 +1,95 @@
+<fury-card>
+  <fury-card-header>
+    <fury-card-header-heading>Habitaciones por Piso</fury-card-header-heading>
+    <fury-card-header-actions>
+      <button mat-raised-button color="primary" (click)="createRoom()">
+        <mat-icon>add</mat-icon>
+        Nueva Habitación
+      </button>
+    </fury-card-header-actions>
+  </fury-card-header>
+
+  <fury-card-content>
+    <mat-tab-group [(selectedIndex)]="selectedFloor" *ngIf="floors.length > 0">
+      <mat-tab *ngFor="let floor of floors; let i = index" [label]="'Piso ' + floor">
+        <div class="rooms-grid">
+          <div class="room-card" *ngFor="let room of getRoomsByFloor(floor)" 
+               [class.inactive]="!room.isActive"
+               [style.--status-color]="getStatusColor(room.displayStatus)"
+               [style.--status-bg]="getStatusBackgroundColor(room.displayStatus)">
+            <div class="card-content">
+              <div class="accent-bar"></div>
+              
+              <div class="room-header">
+                <div class="room-header-left">
+                  <div class="room-number">{{ room.roomNumber }}</div>
+                  <h3 class="room-title">{{ getRoomTypeLabel(room.roomType) }}</h3>
+                </div>
+                <div class="icon-container" [style.background-color]="getStatusLightColor(room.displayStatus)">
+                  <mat-icon class="status-icon" [style.color]="getStatusColor(room.displayStatus)">
+                    {{ getStatusIcon(room.displayStatus) }}
+                  </mat-icon>
+                </div>
+              </div>
+
+              <div class="room-info">
+                <p class="room-subtitle">{{ room.capacity }} Personas • {{ room.basePrice | currency }}</p>
+                
+                <span class="status-badge" [style.background-color]="getStatusColor(room.displayStatus)">
+                  {{ getRoomStatusLabel(room.displayStatus) }}
+                </span>
+              </div>
+
+              <div class="room-actions">
+                <button mat-mini-fab color="primary" (click)="editRoom(room)" matTooltip="Editar Habitación">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-mini-fab color="accent" (click)="createTaskForRoom(room)" matTooltip="Crear Tarea de Limpieza">
+                  <mat-icon>cleaning_services</mat-icon>
+                </button>
+                <button mat-mini-fab style="background-color: #10b981; color: white;" 
+                        (click)="completeRoomTask(room)" 
+                        matTooltip="Completar Limpieza"
+                        *ngIf="room.displayStatus === 'cleaning'">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+                <button mat-mini-fab style="background-color: #10b981; color: white;" 
+                        (click)="checkInRoom(room)" 
+                        matTooltip="Check-in"
+                        *ngIf="room.displayStatus === 'reserved'">
+                  <mat-icon>login</mat-icon>
+                </button>
+                <button mat-mini-fab style="background-color: #667eea; color: white;" 
+                        (click)="viewRoomAccount(room)" 
+                        matTooltip="Ver Cuenta"
+                        *ngIf="room.displayStatus === 'occupied'">
+                  <mat-icon>receipt_long</mat-icon>
+                </button>
+                <button mat-mini-fab style="background-color: #ef4444; color: white;" 
+                        (click)="checkOutRoom(room)" 
+                        matTooltip="Check-out"
+                        *ngIf="room.displayStatus === 'occupied'">
+                  <mat-icon>logout</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="getRoomsByFloor(floor).length === 0">
+            <mat-icon>hotel</mat-icon>
+            <p>No hay habitaciones en este piso</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="empty-state" *ngIf="floors.length === 0">
+      <mat-icon>hotel</mat-icon>
+      <p>No hay habitaciones registradas</p>
+      <button mat-raised-button color="primary" (click)="createRoom()">
+        <mat-icon>add</mat-icon>
+        Crear Primera Habitación
+      </button>
+    </div>
+  </fury-card-content>
+</fury-card>

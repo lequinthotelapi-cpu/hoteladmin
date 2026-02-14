@@ -1,0 +1,30 @@
+// Ocean Dark - Background overrides
+// Force #115D8C as main background color
+
+.fury-ocean-dark {
+  background-color: #115D8C !important;
+  
+  body {
+    background-color: #115D8C !important;
+  }
+  
+  .mat-drawer-container {
+    background-color: #115D8C !important;
+  }
+  
+  .mat-app-background {
+    background-color: #115D8C !important;
+  }
+  
+  .mat-drawer-content {
+    background-color: #115D8C !important;
+  }
+  
+  fury-layout {
+    background-color: #115D8C !important;
+  }
+  
+  .content {
+    background-color: #115D8C !important;
+  }
+}

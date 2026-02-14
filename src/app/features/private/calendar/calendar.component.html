@@ -1,0 +1,60 @@
+<div class="page" fxLayout="column">
+  <div class="toolbar" fxFlex="none" fxLayout="row" fxLayoutAlign="start center">
+    <div fxFlex="grow" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="space-between center">
+      <div class="title">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</div>
+
+      <div class="actions" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="8px">
+        <button mat-icon-button [(viewDate)]="viewDate" [view]="view" mwlCalendarPreviousView>
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-raised-button (click)="goToToday()">Hoy</button>
+        <button mat-icon-button [(viewDate)]="viewDate" [view]="view" mwlCalendarNextView>
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        
+        <mat-button-toggle-group [(value)]="view">
+          <mat-button-toggle value="month">Mes</mat-button-toggle>
+          <mat-button-toggle value="week">Semana</mat-button-toggle>
+          <mat-button-toggle value="day">Día</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <button mat-mini-fab color="primary" (click)="createBooking()" matTooltip="Nueva Reserva">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <fury-scrollbar [ngSwitch]="view" class="background" fxFlex="auto">
+    <mwl-calendar-month-view
+      *ngSwitchCase="'month'"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      [tooltipPlacement]="'top'"
+      [tooltipTemplate]="null"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="handleEventClick($event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)">
+    </mwl-calendar-month-view>
+
+    <mwl-calendar-week-view
+      *ngSwitchCase="'week'"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEventClick($event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)">
+    </mwl-calendar-week-view>
+
+    <mwl-calendar-day-view
+      *ngSwitchCase="'day'"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEventClick($event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)">
+    </mwl-calendar-day-view>
+  </fury-scrollbar>
+</div>

@@ -1,0 +1,43 @@
+.accounts-container {
+  padding: 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.accounts-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.text-success {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.text-danger {
+  color: #f44336;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
+}

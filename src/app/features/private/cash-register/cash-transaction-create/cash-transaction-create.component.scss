@@ -1,0 +1,41 @@
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+  
+  &.deposit {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.withdrawal {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}

@@ -1,0 +1,35 @@
+@import "./var-helpers";
+
+// Ocean Dark Theme - Dark mode variant
+// Override all dark backgrounds with #115D8C
+
+$sidenav-background: #0B3B59 !default;
+$sidenav-color: #F0F1F2 !default;
+$sidenav-toolbar-background: #082d44 !default;
+$sidenav-logo-color: #05DBF2 !default;
+
+$sidenav-item-color: $sidenav-color !default;
+$sidenav-item-color-hover: white !default;
+$sidenav-item-background-hover: #115D8C !default;
+$sidenav-item-text-icon-color: rgba(#05DBF2, 0.7) !default;
+
+$sidenav-item-subheading-color: rgba(#F0F1F2, 0.6) !default;
+
+$toolbar-background: $theme-app-bar !default;
+$toolbar-search-background: $theme-card !default;
+$toolbar-logo-color: #05DBF2 !default;
+
+@import "./default";
+
+// Force override Material dark theme backgrounds
+fury-root {
+  background: #115D8C !important;
+}
+
+.mat-drawer-container {
+  background-color: #115D8C !important;
+}
+
+.mat-app-background {
+  background-color: #115D8C !important;
+}

@@ -1,0 +1,84 @@
+<fury-page-layout>
+  <fury-page-layout-header>
+    <fury-breadcrumbs current="Empleados"></fury-breadcrumbs>
+  </fury-page-layout-header>
+
+  <fury-page-layout-content>
+    <fury-list [columns]="columns" (filterChange)="onFilterChange($event)">
+      <div class="actions">
+        <button mat-mini-fab color="primary" (click)="createEmployee()" matTooltip="Crear Empleado">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="dataSource" matSort class="w-100">
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="employee-info">
+              <img *ngIf="row.avatarUrl" [src]="row.avatarUrl" class="avatar">
+              <div class="avatar-placeholder" *ngIf="!row.avatarUrl">
+                {{ row.firstName.charAt(0) }}{{ row.lastName.charAt(0) }}
+              </div>
+              <span>{{ row.firstName }} {{ row.lastName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cargo</th>
+          <td mat-cell *matCellDef="let row">{{ row.position || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Departamento</th>
+          <td mat-cell *matCellDef="let row">{{ row.department || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip-list>
+              <mat-chip [color]="getRoleColor(row.role)" [selected]="true">
+                {{ getRoleLabel(row.role) }}
+              </mat-chip>
+            </mat-chip-list>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip-list>
+              <mat-chip [color]="row.active ? 'primary' : ''" [selected]="row.active">
+                {{ row.active ? 'Activo' : 'Inactivo' }}
+              </mat-chip>
+            </mat-chip-list>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="updateEmployee(row)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteEmployee(row)" matTooltip="Eliminar" color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="visibleColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: visibleColumns;"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 20, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    </fury-list>
+  </fury-page-layout-content>
+</fury-page-layout>

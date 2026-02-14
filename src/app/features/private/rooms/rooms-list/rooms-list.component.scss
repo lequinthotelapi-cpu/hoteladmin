@@ -1,0 +1,58 @@
+.table-controls {
+  padding: 16px 0;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 400px;
+}
+
+.rooms-table {
+  width: 100%;
+}
+
+.capacity-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  
+  &.badge-success {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  &.badge-danger {
+    background-color: #F44336;
+    color: white;
+  }
+  
+  &.badge-warning {
+    background-color: #FFC107;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
+  &.badge-secondary {
+    background-color: #9E9E9E;
+    color: white;
+  }
+}
+
+mat-icon {
+  &.active {
+    color: #4CAF50;
+  }
+  
+  &.inactive {
+    color: #9E9E9E;
+  }
+}

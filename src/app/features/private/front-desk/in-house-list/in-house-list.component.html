@@ -1,0 +1,33 @@
+<div class="in-house-container">
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && inHouseGuests.length === 0" class="empty-state">
+    <mat-icon>hotel</mat-icon>
+    <p>No hay huéspedes en el hotel actualmente</p>
+  </div>
+
+  <div *ngIf="!loading && inHouseGuests.length > 0" class="in-house-list">
+    <mat-card *ngFor="let guest of inHouseGuests" class="guest-card">
+      <mat-card-content>
+        <div class="guest-info">
+          <div class="info">
+            <h3>{{ guest.guestName }}</h3>
+            <p class="room-info">
+              <mat-icon>hotel</mat-icon>
+              Habitación {{ guest.roomNumber }}
+            </p>
+            <p class="dates-info">
+              <mat-icon>event</mat-icon>
+              Check-in: {{ guest.checkInDate | date }} - Check-out: {{ guest.checkOutDate | date }}
+            </p>
+          </div>
+          <div class="status">
+            <span class="badge">En Casa</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

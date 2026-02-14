@@ -1,0 +1,36 @@
+<div class="arrivals-container">
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && arrivals.length === 0" class="empty-state">
+    <mat-icon>event_available</mat-icon>
+    <p>No hay llegadas programadas para hoy</p>
+  </div>
+
+  <div *ngIf="!loading && arrivals.length > 0" class="arrivals-list">
+    <mat-card *ngFor="let arrival of arrivals" class="arrival-card">
+      <mat-card-content>
+        <div class="arrival-info">
+          <div class="guest-info">
+            <h3>{{ arrival.guestName }}</h3>
+            <p class="room-info">
+              <mat-icon>hotel</mat-icon>
+              Habitación {{ arrival.roomNumber }} - {{ arrival.roomType }}
+            </p>
+            <p class="stay-info">
+              <mat-icon>nights_stay</mat-icon>
+              {{ arrival.nights }} noche(s) - {{ arrival.adults }} adultos, {{ arrival.children }} niños
+            </p>
+          </div>
+          <div class="actions">
+            <button mat-raised-button color="primary" (click)="openCheckIn(arrival)">
+              <mat-icon>login</mat-icon>
+              Check-in
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

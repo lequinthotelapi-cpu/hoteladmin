@@ -1,0 +1,183 @@
+.page-container {
+  padding: 24px;
+}
+
+.subtitle {
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 24px;
+}
+
+// Flujos Operativos
+.workflow-card {
+  margin-bottom: 24px;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+
+    mat-icon {
+      color: #115D8C;
+    }
+  }
+}
+
+.workflow-section {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #115D8C;
+    font-size: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e0e0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid #115D8C;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  background: #115D8C;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.step-content {
+  flex: 1;
+
+  strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+    line-height: 1.5;
+
+    em {
+      color: #115D8C;
+      font-weight: 500;
+      font-style: normal;
+    }
+  }
+}
+
+// Módulos Disponibles
+.modules-card {
+  margin-bottom: 24px;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+
+    mat-icon {
+      color: #115D8C;
+    }
+  }
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.module-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+
+  mat-icon {
+    color: #115D8C;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1.4;
+  }
+}
+
+// Información General
+.info-card {
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+
+    mat-icon {
+      color: #115D8C;
+    }
+  }
+
+  h4 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    color: #115D8C;
+  }
+
+  ul {
+    margin-left: 20px;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+}

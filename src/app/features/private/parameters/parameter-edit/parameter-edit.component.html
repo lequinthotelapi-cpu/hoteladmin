@@ -1,0 +1,89 @@
+<fury-page-layout mode="card">
+  <fury-page-layout-header>
+    <fury-breadcrumbs [crumbs]="['Parámetros']" [current]="category?.name"></fury-breadcrumbs>
+  </fury-page-layout-header>
+
+  <fury-page-layout-content>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{category?.name}}</mat-card-title>
+        <mat-card-subtitle>{{category?.description}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Agregar Nueva Opción -->
+        <div class="add-option-section">
+          <h3>Agregar Nueva Opción</h3>
+          <div class="add-option-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Valor (ID)</mat-label>
+              <input matInput [(ngModel)]="newOptionValue" placeholder="ej: standard">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Etiqueta</mat-label>
+              <input matInput [(ngModel)]="newOptionLabel" placeholder="ej: Estándar">
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="addOption()">
+              <mat-icon>add</mat-icon>
+              Agregar
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Lista de Opciones -->
+        <div class="options-section">
+          <h3>Opciones Existentes (Arrastra para reordenar)</h3>
+          
+          <div cdkDropList (cdkDropListDropped)="drop($event)" class="options-list">
+            <div *ngFor="let option of options" 
+                 cdkDrag 
+                 class="option-item"
+                 [class.inactive]="!option.active">
+              
+              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+              
+              <div class="option-content">
+                <div class="option-info">
+                  <strong>{{option.label}}</strong>
+                  <span class="option-value">{{option.value}}</span>
+                </div>
+              </div>
+
+              <div class="option-actions">
+                <mat-slide-toggle 
+                  [checked]="option.active"
+                  (change)="toggleActive(option)"
+                  color="primary">
+                </mat-slide-toggle>
+                
+                <button mat-icon-button 
+                        (click)="deleteOption(option)"
+                        matTooltip="Eliminar"
+                        color="warn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="options.length === 0" class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>No hay opciones configuradas</p>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button (click)="cancel()">Cancelar</button>
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>
+          Guardar Cambios
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </fury-page-layout-content>
+</fury-page-layout>

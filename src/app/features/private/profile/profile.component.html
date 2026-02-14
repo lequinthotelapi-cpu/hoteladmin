@@ -1,0 +1,164 @@
+<div class="profile-container" *ngIf="user">
+  <div class="profile-grid">
+    <!-- Columna Izquierda: Tarjeta de Perfil -->
+    <aside class="profile-sidebar">
+      <!-- Tarjeta Principal -->
+      <mat-card class="profile-card">
+        <mat-card-content>
+          <div class="profile-header">
+            <div class="avatar-container">
+              <img [src]="user.avatarUrl || 'assets/img/avatars/default.jpg'" class="profile-avatar">
+              <div class="status-indicator" [class.active]="user.active"></div>
+            </div>
+            <h2 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h2>
+            <p class="profile-role">{{ getRoleLabel(user.role) }}</p>
+            <div class="profile-badges">
+              <span class="badge">{{ user.department || 'HOTEL' }}</span>
+              <span class="badge">{{ user.active ? 'ACTIVO' : 'INACTIVO' }}</span>
+            </div>
+          </div>
+
+          <mat-divider class="divider"></mat-divider>
+
+          <!-- Estadísticas -->
+          <div class="stats-grid">
+            <div class="stat-item">
+              <p class="stat-value">{{ getSessionsCount() }}</p>
+              <p class="stat-label">Sesiones</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-value">{{ getYearsWorking() }}</p>
+              <p class="stat-label">Años</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-value">{{ user.maxSessions || 3 }}</p>
+              <p class="stat-label">Max Sesiones</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-value">100%</p>
+              <p class="stat-label">Disponibilidad</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </aside>
+
+    <!-- Columna Derecha: Información Detallada -->
+    <div class="profile-main">
+      <mat-card class="info-card">
+        <!-- Tabs -->
+        <mat-tab-group>
+          <!-- Tab: Información Personal -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">person</mat-icon>
+              Información Personal
+            </ng-template>
+            <div class="tab-content">
+              <div class="info-grid">
+                <div class="info-section">
+                  <div class="info-item">
+                    <label class="info-label">Nombre Completo</label>
+                    <div class="info-value">
+                      <span>{{ user.firstName }} {{ user.lastName }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <label class="info-label">Correo Electrónico</label>
+                    <div class="info-value">
+                      <span>{{ user.email }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item" *ngIf="user.phone">
+                    <label class="info-label">Teléfono</label>
+                    <div class="info-value">
+                      <span>{{ user.phone }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info-section">
+                  <div class="info-item" *ngIf="user.document">
+                    <label class="info-label">Documento de Identidad</label>
+                    <div class="info-value">
+                      <span>{{ user.document }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item" *ngIf="user.position">
+                    <label class="info-label">Cargo</label>
+                    <div class="info-value">
+                      <span>{{ user.position }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item" *ngIf="user.department">
+                    <label class="info-label">Departamento</label>
+                    <div class="info-value">
+                      <span>{{ user.department }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-item full-width" *ngIf="user.createdAt">
+                <label class="info-label">Fecha de Registro</label>
+                <div class="info-value">
+                  <span>{{ getCreatedAtDate() | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab: Seguridad -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">security</mat-icon>
+              Seguridad
+            </ng-template>
+            <div class="tab-content">
+              <div class="security-section">
+                <h3>Gestión de Sesiones</h3>
+                <div class="info-item">
+                  <label class="info-label">Sesiones Activas</label>
+                  <div class="info-value">
+                    <span>{{ user.activeSessionsCount || 0 }} de {{ user.maxSessions || 3 }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <label class="info-label">Máximo de Sesiones Permitidas</label>
+                  <div class="info-value">
+                    <span>{{ user.maxSessions || 3 }} sesiones simultáneas</span>
+                  </div>
+                </div>
+              </div>
+
+              <mat-divider class="section-divider"></mat-divider>
+
+              <div class="security-section">
+                <h3>Permisos y Acceso</h3>
+                <div class="info-item">
+                  <label class="info-label">Rol del Sistema</label>
+                  <div class="info-value">
+                    <span>{{ getRoleLabel(user.role) }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <label class="info-label">Estado de Cuenta</label>
+                  <div class="info-value">
+                    <span [style.color]="user.active ? '#4caf50' : '#f44336'">{{ user.active ? 'Cuenta Activa' : 'Cuenta Inactiva' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button mat-raised-button color="warn" (click)="resetAllSessions()">
+                  <mat-icon>logout</mat-icon>
+                  Cerrar Todas las Sesiones
+                </button>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+.page-container {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.role-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.role-code {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.info-card {
+  background-color: #e3f2fd;
+  
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.route-group {
+  margin-bottom: 16px;
+
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.route-checkbox {
+  display: block;
+  margin-bottom: 8px;
+}

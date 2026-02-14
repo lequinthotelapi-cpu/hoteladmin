@@ -1,0 +1,71 @@
+.dialog-container {
+  min-height: 500px;
+}
+
+.heading {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.subheading {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 24px;
+}
+
+.content {
+  padding: 24px 0;
+}
+
+.actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.photo-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.photo-preview {
+  img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+  }
+}
+
+.companion-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.companion-header {
+  margin-bottom: 16px;
+
+  h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.no-companions {
+  text-align: center;
+  padding: 32px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}

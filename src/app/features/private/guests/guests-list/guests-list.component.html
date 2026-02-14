@@ -1,0 +1,104 @@
+<fury-page-layout mode="card">
+  <fury-page-layout-header>
+    <fury-breadcrumbs current="Huéspedes"></fury-breadcrumbs>
+  </fury-page-layout-header>
+
+  <fury-page-layout-content>
+    <fury-list [columns]="columns" (filterChange)="onFilterChange($event)">
+      <div class="actions">
+        <button class="create" (click)="createGuest()" type="button" mat-mini-fab color="primary">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <table [dataSource]="dataSource" mat-table matSort>
+        
+        <ng-container matColumnDef="photo">
+          <th mat-header-cell *matHeaderCellDef class="image-cell"></th>
+          <td mat-cell *matCellDef="let guest" class="image-cell">
+            <img [src]="guest.photoUrl || 'assets/img/avatars/default.jpg'" 
+                 class="guest-photo" 
+                 [alt]="guest.firstName">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre Completo</th>
+          <td mat-cell *matCellDef="let guest">
+            <div class="guest-name">
+              <strong>{{ guest.firstName }} {{ guest.lastName }}</strong>
+              <small>{{ guest.documentType }} - {{ guest.documentNumber }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let guest">{{ guest.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+          <td mat-cell *matCellDef="let guest">{{ guest.phone }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="guestType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let guest">
+            {{ getGuestTypeLabel(guest.guestType) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let guest">
+            <span class="badge" [ngClass]="getStatusBadgeClass(guest.status)">
+              {{ getGuestStatusLabel(guest.status) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="vip">
+          <th mat-header-cell *matHeaderCellDef>VIP</th>
+          <td mat-cell *matCellDef="let guest">
+            <mat-slide-toggle
+              [checked]="guest.vip"
+              [disabled]="processingGuestId === guest.id"
+              (change)="toggleVipStatus(guest, $event)"
+              [color]="guest.vip ? 'warn' : 'primary'">
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell"></th>
+          <td mat-cell *matCellDef="let guest" class="actions-cell">
+            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
+              <button mat-menu-item (click)="editGuest(guest)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+              <button mat-menu-item (click)="deleteGuest(guest)">
+                <mat-icon>delete</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="visibleColumns"></tr>
+        <tr mat-row 
+            *matRowDef="let row; columns: visibleColumns;"
+            (click)="editGuest(row)"
+            class="clickable"></tr>
+      </table>
+
+      <mat-paginator class="paginator" [pageSize]="10" [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+
+    </fury-list>
+
+  </fury-page-layout-content>
+</fury-page-layout>

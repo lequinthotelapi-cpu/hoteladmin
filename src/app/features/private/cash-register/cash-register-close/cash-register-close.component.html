@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Cerrar Caja</h2>
+
+<mat-dialog-content>
+  <!-- Resumen del Turno -->
+  <div class="summary-section">
+    <h3>Resumen del Turno</h3>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="label">Monto Inicial:</span>
+        <span class="value">{{ data.cashRegister.initialAmount | currency }}</span>
+      </div>
+      <div class="summary-item positive">
+        <span class="label">Ventas:</span>
+        <span class="value">+{{ data.cashRegister.salesTotal | currency }}</span>
+      </div>
+      <div class="summary-item positive">
+        <span class="label">Pagos:</span>
+        <span class="value">+{{ data.cashRegister.paymentsTotal | currency }}</span>
+      </div>
+      <div class="summary-item positive">
+        <span class="label">Depósitos:</span>
+        <span class="value">+{{ data.cashRegister.depositsTotal | currency }}</span>
+      </div>
+      <div class="summary-item negative">
+        <span class="label">Gastos:</span>
+        <span class="value">-{{ data.cashRegister.expensesTotal | currency }}</span>
+      </div>
+      <div class="summary-item negative">
+        <span class="label">Retiros:</span>
+        <span class="value">-{{ data.cashRegister.withdrawalsTotal | currency }}</span>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="summary-total">
+      <span class="label">Monto Esperado:</span>
+      <span class="value">{{ data.cashRegister.expectedAmount | currency }}</span>
+    </div>
+  </div>
+
+  <!-- Arqueo -->
+  <form [formGroup]="form">
+    <h3>Arqueo de Caja</h3>
+    <p class="info-text">
+      <mat-icon>info</mat-icon>
+      Cuenta el efectivo físico en la caja e ingresa el monto total
+    </p>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Monto Final (Conteo Físico)</mat-label>
+      <input matInput type="number" formControlName="finalAmount" required min="0" step="0.01">
+      <span matPrefix>$&nbsp;</span>
+      <mat-error *ngIf="form.get('finalAmount')?.hasError('required')">
+        El monto final es requerido
+      </mat-error>
+      <mat-error *ngIf="form.get('finalAmount')?.hasError('min')">
+        El monto no puede ser negativo
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Diferencia -->
+    <div class="difference-box" 
+         [class.positive]="difference > 0" 
+         [class.negative]="difference < 0"
+         [class.zero]="difference === 0">
+      <span class="label">Diferencia:</span>
+      <span class="value">{{ difference | currency }}</span>
+    </div>
+
+    <!-- Notas (obligatorias si hay diferencia) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notas {{ Math.abs(difference) > 0 ? '(Explica la diferencia)' : '(Opcional)' }}</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="warn" (click)="submit()" [disabled]="loading">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">Cerrar Caja</span>
+  </button>
+</mat-dialog-actions>

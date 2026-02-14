@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Editar Tarea' : 'Nueva Tarea' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" *ngIf="!isEditMode">
+      <mat-label>Habitación</mat-label>
+      <mat-select formControlName="roomId" (selectionChange)="onRoomChange()" required>
+        <mat-option *ngFor="let room of rooms" [value]="room.id">
+          {{ room.roomNumber }} - Piso {{ room.floor }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('roomId')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" *ngIf="!isEditMode">
+      <mat-label>Tipo de Tarea</mat-label>
+      <mat-select formControlName="taskType" required>
+        <mat-option *ngFor="let type of taskTypes" [value]="type.value">
+          {{ type.label }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('taskType')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad</mat-label>
+      <mat-select formControlName="priority" required>
+        <mat-option *ngFor="let priority of taskPriorities" [value]="priority.value">
+          {{ priority.label }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('priority')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha Programada</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="form.get('scheduledDate')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" *ngIf="!isEditMode">
+      <mat-label>Duración Estimada (minutos)</mat-label>
+      <input matInput type="number" formControlName="estimatedDuration" required>
+      <mat-error *ngIf="form.get('estimatedDuration')?.hasError('required')">Requerido</mat-error>
+      <mat-error *ngIf="form.get('estimatedDuration')?.hasError('min')">Debe ser mayor a 0</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Asignar a</mat-label>
+      <mat-select formControlName="assignedTo">
+        <mat-option [value]="''">Sin asignar</mat-option>
+        <mat-option *ngFor="let housekeeper of housekeepers" [value]="housekeeper.uid">
+          {{ housekeeper.firstName }} {{ housekeeper.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Notas</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading || form.invalid">
+    <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    <mat-icon *ngIf="loading" class="spinning">hourglass_empty</mat-icon>
+    {{ isEditMode ? 'Guardar' : 'Crear' }}
+  </button>
+</mat-dialog-actions>

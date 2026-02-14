@@ -1,0 +1,140 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Editar Reserva' : 'Nueva Reserva' }}
+</h2>
+
+<mat-dialog-content>
+  <mat-horizontal-stepper [linear]="true" [selectedIndex]="currentStep">
+    <!-- Step 1: Búsqueda -->
+    <mat-step [completed]="availableRooms.length > 0">
+      <ng-template matStepLabel>Búsqueda</ng-template>
+      <form [formGroup]="searchForm">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Check-in</mat-label>
+            <input matInput [matDatepicker]="checkInPicker" formControlName="checkInDate" required>
+            <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+            <mat-datepicker #checkInPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Check-out</mat-label>
+            <input matInput [matDatepicker]="checkOutPicker" formControlName="checkOutDate" required>
+            <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+            <mat-datepicker #checkOutPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Adultos</mat-label>
+            <input matInput type="number" formControlName="adults" required min="1">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Niños</mat-label>
+            <input matInput type="number" formControlName="children" min="0">
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="searchRooms()" [disabled]="loading">
+          <mat-icon>search</mat-icon>
+          Buscar Habitaciones
+        </button>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Selección de Habitación -->
+    <mat-step [completed]="!!selectedRoom">
+      <ng-template matStepLabel>Habitación</ng-template>
+      <p class="step-description">Selecciona una habitación disponible para continuar</p>
+      <div class="rooms-grid">
+        <mat-card *ngFor="let room of availableRooms" 
+                  class="room-card" 
+                  [class.selected]="selectedRoom?.id === room.id"
+                  (click)="selectRoom(room)">
+          <mat-card-header>
+            <mat-card-title>
+              {{ room.roomNumber }}
+              <mat-icon *ngIf="selectedRoom?.id === room.id" class="check-icon">check_circle</mat-icon>
+            </mat-card-title>
+            <mat-card-subtitle>{{ room.roomType }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p><strong>Capacidad:</strong> {{ room.capacity }} personas</p>
+            <p><strong>Precio:</strong> {{ room.basePrice | currency }}/noche</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="step-actions">
+        <button mat-button (click)="goBack()">Volver</button>
+        <button mat-raised-button color="primary" (click)="currentStep = 2" [disabled]="!selectedRoom">
+          Continuar
+        </button>
+      </div>
+    </mat-step>
+
+    <!-- Step 3: Selección de Huésped -->
+    <mat-step [completed]="!!selectedGuest">
+      <ng-template matStepLabel>Huésped</ng-template>
+      <form [formGroup]="guestForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Seleccionar Huésped</mat-label>
+          <mat-select formControlName="guestId" required>
+            <mat-option *ngFor="let guest of guests" [value]="guest.id">
+              {{ guest.firstName }} {{ guest.lastName }} - {{ guest.email }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="selectGuest()" [disabled]="guestForm.invalid">
+          Continuar
+        </button>
+        <button mat-button (click)="goBack()">Volver</button>
+      </form>
+    </mat-step>
+
+    <!-- Step 4: Confirmación -->
+    <mat-step>
+      <ng-template matStepLabel>Confirmación</ng-template>
+      <form [formGroup]="detailsForm">
+        <div class="summary">
+          <h3>Resumen de la Reserva</h3>
+          <p><strong>Habitación:</strong> {{ selectedRoom?.roomNumber }}</p>
+          <p><strong>Huésped:</strong> {{ selectedGuest?.firstName }} {{ selectedGuest?.lastName }}</p>
+          <p><strong>Check-in:</strong> {{ searchForm.value.checkInDate | date }}</p>
+          <p><strong>Check-out:</strong> {{ searchForm.value.checkOutDate | date }}</p>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fuente</mat-label>
+          <mat-select formControlName="source" required>
+            <mat-option *ngFor="let source of sources" [value]="source.value">
+              {{ source.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Solicitudes Especiales</mat-label>
+          <textarea matInput formControlName="specialRequests" rows="2"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Notas</mat-label>
+          <textarea matInput formControlName="notes" rows="2"></textarea>
+        </mat-form-field>
+      </form>
+      <button mat-button (click)="goBack()">Volver</button>
+    </mat-step>
+  </mat-horizontal-stepper>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading || currentStep !== 3" *ngIf="currentStep === 3">
+    <mat-icon *ngIf="!loading">save</mat-icon>
+    <mat-icon *ngIf="loading" class="spinning">hourglass_empty</mat-icon>
+    Crear Reserva
+  </button>
+</mat-dialog-actions>

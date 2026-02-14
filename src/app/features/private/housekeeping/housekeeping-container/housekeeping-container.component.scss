@@ -1,0 +1,36 @@
+.housekeeping-container {
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+mat-tab-group {
+  ::ng-deep .mat-tab-label {
+    min-width: 160px;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    padding: 24px 0;
+  }
+}

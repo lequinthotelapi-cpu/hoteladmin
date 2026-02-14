@@ -1,0 +1,129 @@
+<fury-card>
+  <fury-card-header>
+    <fury-card-header-heading>Habitaciones</fury-card-header-heading>
+    <fury-card-header-actions>
+      <button mat-raised-button color="primary" (click)="createRoom()">
+        <mat-icon>add</mat-icon>
+        Nueva Habitación
+      </button>
+    </fury-card-header-actions>
+  </fury-card-header>
+
+  <fury-card-content>
+    <div class="table-controls">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="onFilterChange($event.target.value)" placeholder="Buscar habitación...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort class="rooms-table">
+      <!-- Room Number Column -->
+      <ng-container matColumnDef="roomNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Número</th>
+        <td mat-cell *matCellDef="let room">
+          <strong>{{ room.roomNumber }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Floor Column -->
+      <ng-container matColumnDef="floor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Piso</th>
+        <td mat-cell *matCellDef="let room">{{ room.floor }}</td>
+      </ng-container>
+
+      <!-- Room Type Column -->
+      <ng-container matColumnDef="roomType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+        <td mat-cell *matCellDef="let room">{{ getRoomTypeLabel(room.roomType) }}</td>
+      </ng-container>
+
+      <!-- Bed Type Column -->
+      <ng-container matColumnDef="bedType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cama</th>
+        <td mat-cell *matCellDef="let room">{{ getBedTypeLabel(room.bedType) }}</td>
+      </ng-container>
+
+      <!-- Capacity Column -->
+      <ng-container matColumnDef="capacity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacidad</th>
+        <td mat-cell *matCellDef="let room">
+          <mat-icon class="capacity-icon">person</mat-icon>
+          {{ room.capacity }}
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let room">
+          <span class="badge" [ngClass]="getStatusBadgeClass(room.status)">
+            {{ getRoomStatusLabel(room.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Base Price Column -->
+      <ng-container matColumnDef="basePrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+        <td mat-cell *matCellDef="let room">{{ room.basePrice | currency }}</td>
+      </ng-container>
+
+      <!-- Active Column -->
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Activo</th>
+        <td mat-cell *matCellDef="let room">
+          <mat-icon [class.active]="room.isActive" [class.inactive]="!room.isActive">
+            {{ room.isActive ? 'check_circle' : 'cancel' }}
+          </mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let room">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="editRoom(room)">
+              <mat-icon>edit</mat-icon>
+              <span>Editar</span>
+            </button>
+            <button mat-menu-item (click)="createTaskForRoom(room)">
+              <mat-icon>cleaning_services</mat-icon>
+              <span>Crear Tarea</span>
+            </button>
+            <button mat-menu-item (click)="completeRoomTask(room)" *ngIf="room.status === 'cleaning'">
+              <mat-icon style="color: #10b981;">check_circle</mat-icon>
+              <span>Completar Limpieza</span>
+            </button>
+            <button mat-menu-item (click)="checkInRoom(room)" *ngIf="room.status === 'reserved'">
+              <mat-icon style="color: #10b981;">login</mat-icon>
+              <span>Check-in</span>
+            </button>
+            <button mat-menu-item (click)="viewRoomAccount(room)" *ngIf="room.status === 'occupied'">
+              <mat-icon style="color: #667eea;">receipt_long</mat-icon>
+              <span>Ver Cuenta</span>
+            </button>
+            <button mat-menu-item (click)="checkOutRoom(room)" *ngIf="room.status === 'occupied'">
+              <mat-icon style="color: #ef4444;">logout</mat-icon>
+              <span>Check-out</span>
+            </button>
+            <button mat-menu-item (click)="deleteRoom(room)">
+              <mat-icon color="warn">delete</mat-icon>
+              <span>Eliminar</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="visibleColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: visibleColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+  </fury-card-content>
+</fury-card>

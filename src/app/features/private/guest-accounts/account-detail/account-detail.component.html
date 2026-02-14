@@ -1,0 +1,159 @@
+<div class="detail-container" *ngIf="account">
+  <fury-card>
+    <fury-card-header>
+      <fury-card-header-heading>
+        <button mat-icon-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        Cuenta de Huésped - {{ account.roomNumber }}
+      </fury-card-header-heading>
+      <fury-card-header-actions>
+        <button mat-raised-button color="primary" (click)="addCharge()" *ngIf="account.status === 'open'">
+          <mat-icon>add</mat-icon>
+          Agregar Cargo
+        </button>
+        <button mat-raised-button color="accent" (click)="addPayment()" *ngIf="account.status === 'open'">
+          <mat-icon>payment</mat-icon>
+          Registrar Pago
+        </button>
+        <button mat-raised-button color="warn" (click)="closeAccount()" *ngIf="account.status === 'open'">
+          <mat-icon>lock</mat-icon>
+          Cerrar Cuenta
+        </button>
+        <button mat-raised-button style="background: #667eea; color: white;" (click)="generateInvoice()" 
+                *ngIf="account.status === 'closed' && !hasInvoice">
+          <mat-icon>receipt</mat-icon>
+          Generar Factura
+        </button>
+        <button mat-stroked-button *ngIf="hasInvoice" disabled>
+          <mat-icon>check_circle</mat-icon>
+          Facturada
+        </button>
+      </fury-card-header-actions>
+    </fury-card-header>
+
+    <fury-card-content>
+      <!-- Account Info -->
+      <div class="account-info">
+        <div class="info-row">
+          <div class="info-item">
+            <span class="label">Huésped:</span>
+            <span class="value">{{ account.guestName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Habitación:</span>
+            <span class="value">{{ account.roomNumber }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Check-in:</span>
+            <span class="value">{{ account.checkInDate | date:'short' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Estado:</span>
+            <span class="value" [class.status-open]="account.status === 'open'" [class.status-closed]="account.status === 'closed'">
+              {{ account.status === 'open' ? 'Abierta' : 'Cerrada' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-card">
+        <div class="summary-item">
+          <span class="summary-label">Subtotal</span>
+          <span class="summary-value">{{ account.subtotal | currency }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">IVA (13%)</span>
+          <span class="summary-value">{{ account.tax | currency }}</span>
+        </div>
+        <div class="summary-item total">
+          <span class="summary-label">Total</span>
+          <span class="summary-value">{{ account.total | currency }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Pagado</span>
+          <span class="summary-value text-success">{{ account.paid | currency }}</span>
+        </div>
+        <div class="summary-item balance">
+          <span class="summary-label">Saldo</span>
+          <span class="summary-value" [class.text-success]="account.balance === 0" [class.text-danger]="account.balance > 0">
+            {{ account.balance | currency }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Charges -->
+      <div class="section">
+        <h3>Cargos</h3>
+        <table mat-table [dataSource]="account.charges" class="charges-table">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let charge">{{ charge.date | date:'short' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let charge">{{ getChargeTypeLabel(charge.type) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let charge">{{ charge.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Cant.</th>
+            <td mat-cell *matCellDef="let charge">{{ charge.quantity }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <td mat-cell *matCellDef="let charge">{{ charge.amount | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let charge">{{ charge.total | currency }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="chargesColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: chargesColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Payments -->
+      <div class="section" *ngIf="account.payments.length > 0">
+        <h3>Pagos</h3>
+        <table mat-table [dataSource]="account.payments" class="payments-table">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let payment">{{ payment.date | date:'short' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="method">
+            <th mat-header-cell *matHeaderCellDef>Método</th>
+            <td mat-cell *matCellDef="let payment">{{ getPaymentMethodLabel(payment.method) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Monto</th>
+            <td mat-cell *matCellDef="let payment">{{ payment.amount | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="reference">
+            <th mat-header-cell *matHeaderCellDef>Referencia</th>
+            <td mat-cell *matCellDef="let payment">{{ payment.reference || '-' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="paymentsColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: paymentsColumns;"></tr>
+        </table>
+      </div>
+    </fury-card-content>
+  </fury-card>
+</div>
+
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>

@@ -1,0 +1,56 @@
+<div (furyClickOutside)="onClickOutside()" class="toolbar-notifications"
+     fxFlex="grow" fxLayout="row" fxLayoutAlign="start center">
+  <button (click)="toggleDropdown()" [class.open]="isOpen" class="button"
+          fxFlex="grow" mat-button type="button">
+    <mat-icon [matBadgeHidden]="unreadCount === 0" [matBadge]="unreadCount" matBadgeColor="warn" class="icon">
+      notifications_active
+    </mat-icon>
+  </button>
+
+  <div [class.open]="isOpen" class="dropdown">
+    <fury-card>
+      <fury-card-header class="dropdown-header">
+        <fury-card-header-heading>
+          Notificaciones
+        </fury-card-header-heading>
+        <fury-card-header-subheading>
+          Tienes {{ unreadCount }} notificaciones sin leer.
+        </fury-card-header-subheading>
+      </fury-card-header>
+
+      <fury-card-content class="dropdown-card-content">
+        <fury-scrollbar class="dropdown-content">
+          <div fxLayout="column">
+            <ng-container *ngFor="let notification of notifications; let last = last">
+              <div (click)="markAsRead(notification)"
+                   [@listFade]
+                   [class.read]="notification.read" [ngClass]="getColorClass(notification.priority)"
+                   class="notification" fxLayout="row"
+                   fxLayoutAlign="start center" matRipple>
+                <mat-icon class="icon">{{ getIcon(notification.type) }}</mat-icon>
+                <div class="label" fxLayout="column">
+                  <div class="name">{{ notification.title }}</div>
+                  <div class="message">{{ notification.message }}</div>
+                  <div class="time">{{ getTimeAgo(notification.createdAt) }}</div>
+                </div>
+                <span fxFlex></span>
+                <button (click)="dismiss(notification, $event)" mat-icon-button type="button">
+                  <mat-icon class="close">close</mat-icon>
+                </button>
+              </div>
+              <mat-divider *ngIf="!last"></mat-divider>
+            </ng-container>
+          </div>
+          <div *ngIf="notifications.length === 0" [@listFade] class="empty">
+            No tienes notificaciones.
+          </div>
+        </fury-scrollbar>
+      </fury-card-content>
+
+
+      <fury-card-actions (click)="markAllAsRead()" class="dropdown-footer" matRipple>
+        Marcar todas como leídas
+      </fury-card-actions>
+    </fury-card>
+  </div>
+</div>

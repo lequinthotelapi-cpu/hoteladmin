@@ -1,0 +1,24 @@
+@import "./var-helpers";
+
+// Ocean Theme - Custom color palette
+// Primary: #115D8C (Deep Blue)
+// Accent: #9498F2 (Periwinkle)
+// Highlight: #05DBF2 (Cyan)
+
+$sidenav-background: #0B3B59 !default;
+$sidenav-color: #F0F1F2 !default;
+$sidenav-toolbar-background: #0B3B59 !default;
+$sidenav-logo-color: #05DBF2 !default;
+
+$sidenav-item-color: $sidenav-color !default;
+$sidenav-item-color-hover: white !default;
+$sidenav-item-background-hover: #115D8C !default;
+$sidenav-item-text-icon-color: rgba(#05DBF2, 0.7) !default;
+
+$sidenav-item-subheading-color: rgba(#F0F1F2, 0.6) !default;
+
+$toolbar-background: $theme-card !default;
+$toolbar-search-background: $theme-app-bar !default;
+$toolbar-logo-color: #115D8C !default;
+
+@import "./default";

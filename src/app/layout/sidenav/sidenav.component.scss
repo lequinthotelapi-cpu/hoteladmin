@@ -1,0 +1,143 @@
+@use 'sass:math';
+@import "var";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  z-index: $sidenav-z-index;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  width: $sidenav-width;
+}
+
+.sidenav {
+  height: 100%;
+  will-change: width;
+}
+
+.sidenav-toolbar {
+  padding: 0 math.div($spacing, 1.333) 0 $spacing;
+  height: $sidenav-toolbar-height;
+  min-height: $sidenav-toolbar-height;
+  max-height: $sidenav-toolbar-height;
+  overflow: hidden;
+
+  .sidenav-toolbar-icon {
+    vertical-align: text-top;
+
+    svg {
+      width: 26px;
+    }
+  }
+
+  .sidenav-toolbar-logo {
+    cursor: pointer;
+    outline: none;
+    margin-left: $sidenav-item-padding-left;
+    margin-bottom: -5px;
+
+    svg {
+      height: 30px;
+      width: auto;
+    }
+  }
+}
+
+.sidenav-toolbar-collapse-toggle {
+  transition: transform .25s;
+
+  .sidenav-toolbar-collapse-icon {
+    width: 12px;
+    height: 12px;
+    font-size: 12px;
+    line-height: 12px;
+  }
+
+  &.rotate {
+    transform: rotate(-180deg);
+  }
+}
+
+.sidenav-toolbar-logo, .sidenav-toolbar-collapse-toggle {
+  will-change: opacity;
+}
+
+.sidenav-user {
+  text-align: center;
+  margin-bottom: 8px;
+
+  .sidenav-user-image {
+    display: block;
+    height: 72px;
+    width: 72px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+  }
+
+  .sidenav-user-name {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .sidenav-user-lastname {
+    margin: 0 0 4px;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .sidenav-user-role {
+    margin: 0 0 8px;
+    font-size: 11px;
+    opacity: 0.7;
+    line-height: 1.2;
+  }
+
+  .sidenav-user-icons {
+
+    [mat-icon-button] {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      padding: 0;
+
+      & + [mat-icon-button] {
+        margin-left: $padding-xxs;
+      }
+    }
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      line-height: 18px;
+    }
+  }
+}
+
+.sidenav-items {
+  min-height: 0;
+}
+
+.sidenav-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  
+  .sidenav-config-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 16px;
+    text-align: left;
+    
+    mat-icon {
+      margin-right: 12px;
+    }
+    
+    span {
+      font-size: 14px;
+    }
+  }
+}

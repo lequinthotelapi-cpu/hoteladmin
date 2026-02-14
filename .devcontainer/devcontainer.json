@@ -1,0 +1,35 @@
+{
+  "name": "Angular 16 Development",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "angular-dev",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "angular.ng-template",
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "amazonwebservices.amazon-q-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "typescript.preferences.importModuleSpecifier": "relative"
+      }
+    }
+  },
+  "forwardPorts": [4200],
+  "portsAttributes": {
+    "4200": {
+      "label": "Angular Dev Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "npm install",
+  "remoteUser": "root",
+  "mounts": [
+    "source=${localWorkspaceFolder}/.vscode,target=/workspace/.vscode,type=bind,consistency=cached"
+  ]
+}

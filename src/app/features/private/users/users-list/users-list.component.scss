@@ -1,0 +1,124 @@
+.clickable {
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.image-cell {
+  width: 60px;
+}
+
+.actions-cell {
+  width: 60px;
+  text-align: center;
+}
+
+.user-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 14px;
+  }
+
+  small {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.role-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-purple {
+  background-color: #9c27b0;
+  color: white;
+}
+
+.badge-red {
+  background-color: #f44336;
+  color: white;
+}
+
+.badge-blue {
+  background-color: #2196f3;
+  color: white;
+}
+
+.badge-green {
+  background-color: #4caf50;
+  color: white;
+}
+
+.badge-orange {
+  background-color: #ff9800;
+  color: white;
+}
+
+.badge-gray {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.active-chip {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.inactive-chip {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.sessions-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .online-icon {
+    color: #4caf50;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.status-label {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+::ng-deep .mat-slide-toggle.toggle-active .mat-slide-toggle-bar {
+  background-color: rgba(76, 175, 80, 0.5) !important;
+}
+
+::ng-deep .mat-slide-toggle.toggle-active .mat-slide-toggle-thumb {
+  background-color: #4caf50 !important;
+}
+
+::ng-deep .mat-slide-toggle.toggle-inactive .mat-slide-toggle-bar {
+  background-color: rgba(244, 67, 54, 0.5) !important;
+}
+
+::ng-deep .mat-slide-toggle.toggle-inactive .mat-slide-toggle-thumb {
+  background-color: #f44336 !important;
+}
+
+.delete-action {
+  color: #f44336;
+}
+
+.warning-action {
+  color: #ff9800;
+}

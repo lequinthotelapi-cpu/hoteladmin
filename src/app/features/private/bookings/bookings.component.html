@@ -1,0 +1,25 @@
+<fury-page-layout>
+  <fury-page-layout-header>
+    <fury-breadcrumbs current="Reservas"></fury-breadcrumbs>
+  </fury-page-layout-header>
+
+  <fury-page-layout-content>
+    <fury-card>
+      <fury-card-content>
+        <mat-tab-group [(selectedIndex)]="selectedTab">
+          <mat-tab label="Todas las Reservas">
+            <fury-bookings-list></fury-bookings-list>
+          </mat-tab>
+          
+          <mat-tab label="Llegadas de Hoy">
+            <fury-bookings-arrivals></fury-bookings-arrivals>
+          </mat-tab>
+          
+          <mat-tab label="Salidas de Hoy">
+            <fury-bookings-departures></fury-bookings-departures>
+          </mat-tab>
+        </mat-tab-group>
+      </fury-card-content>
+    </fury-card>
+  </fury-page-layout-content>
+</fury-page-layout>

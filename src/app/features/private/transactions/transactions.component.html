@@ -1,0 +1,86 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Movimientos</h1>
+    <button mat-raised-button color="primary" (click)="createTransaction()" [disabled]="!openCashRegisterId">
+      <mat-icon>add</mat-icon>
+      Nuevo Movimiento
+    </button>
+  </div>
+
+  <mat-card *ngIf="!openCashRegisterId" class="warning-card">
+    <mat-icon>warning</mat-icon>
+    <p>No tienes una caja abierta. Abre una caja para registrar movimientos.</p>
+  </mat-card>
+
+  <!-- Barra de búsqueda -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar movimientos</mat-label>
+      <input matInput [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Buscar por descripción, usuario, categoría...">
+      <mat-icon matPrefix>search</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="searchText" (click)="searchText=''; onSearchChange()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Filtros -->
+  <mat-card class="filter-card">
+    <mat-chip-listbox [(ngModel)]="filterType" (ngModelChange)="onFilterChange()">
+      <mat-chip-option value="all">Todos</mat-chip-option>
+      <mat-chip-option value="expense">Gastos</mat-chip-option>
+      <mat-chip-option value="deposit">Depósitos</mat-chip-option>
+      <mat-chip-option value="withdrawal">Retiros</mat-chip-option>
+      <mat-chip-option value="sale">Ventas</mat-chip-option>
+      <mat-chip-option value="payment">Pagos</mat-chip-option>
+    </mat-chip-listbox>
+  </mat-card>
+
+  <!-- Lista de Transacciones -->
+  <mat-card class="transactions-card">
+    <div *ngIf="loading" class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && filteredTransactions.length === 0" class="no-data">
+      <mat-icon>receipt</mat-icon>
+      <p>No hay movimientos registrados</p>
+    </div>
+
+    <div *ngIf="!loading && filteredTransactions.length > 0" class="transactions-list">
+      <div *ngFor="let transaction of filteredTransactions" 
+           class="transaction-item"
+           [class]="getTransactionColor(transaction.type)">
+        <div class="transaction-icon">
+          <mat-icon>{{ getTransactionIcon(transaction.type) }}</mat-icon>
+        </div>
+        <div class="transaction-info">
+          <div class="transaction-main">
+            <span class="transaction-type">{{ getTransactionTypeLabel(transaction.type) }}</span>
+            <span class="transaction-description">{{ transaction.description }}</span>
+          </div>
+          <div class="transaction-meta">
+            <span>{{ transaction.createdAt.toDate() | date:'short' }}</span>
+            <span>•</span>
+            <span>{{ transaction.paymentMethod }}</span>
+            <span *ngIf="transaction.category">• {{ transaction.category }}</span>
+          </div>
+        </div>
+        <div class="transaction-amount">
+          {{ transaction.amount | currency }}
+        </div>
+        <div class="transaction-actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="deleteTransaction(transaction)">
+              <mat-icon color="warn">delete</mat-icon>
+              <span>Eliminar</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

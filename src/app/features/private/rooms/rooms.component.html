@@ -12,6 +12,10 @@
           <mat-icon>view_list</mat-icon>
           Vista Tabla
         </mat-button-toggle>
+        <mat-button-toggle value="map">
+          <mat-icon>map</mat-icon>
+          Vista Mapa
+        </mat-button-toggle>
       </mat-button-toggle-group>
     </div>
   </div>
@@ -19,5 +23,97 @@
   <div class="page-content">
     <fury-rooms-grid *ngIf="viewMode === 'grid'"></fury-rooms-grid>
     <fury-rooms-list *ngIf="viewMode === 'list'"></fury-rooms-list>
+    
+    <div *ngIf="viewMode === 'map'" class="map-view">
+      <mat-button-toggle-group [(value)]="selectedFloor" class="floor-selector-vertical" vertical>
+        <mat-button-toggle [value]="1">
+          <mat-icon>looks_one</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="2">
+          <mat-icon>looks_two</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      
+      <div class="floor-container">
+        <div class="floor-map">
+          <div class="svg-wrapper" *ngIf="selectedFloor === 1">
+            <object 
+              id="piso1-svg" 
+              [data]="piso1Path"
+              type="image/svg+xml" 
+              class="floor-svg"
+              (load)="onSvgLoad($event)">
+            </object>
+          </div>
+          
+          <div class="svg-wrapper" *ngIf="selectedFloor === 2">
+            <object 
+              id="piso2-svg" 
+              [data]="piso2Path"
+              type="image/svg+xml" 
+              class="floor-svg"
+              (load)="onSvgLoad($event)">
+            </object>
+          </div>
+        </div>
+      </div>
+      
+      <div class="status-filter-panel">
+        <div class="filter-title">Filtrar</div>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('available')"
+                (click)="toggleStatusFilter('available')"
+                [style.background-color]="isStatusSelected('available') ? '#10b981' : '#e5e7eb'"
+                matTooltip="Disponible">
+          <mat-icon [style.color]="isStatusSelected('available') ? 'white' : '#9ca3af'">check_circle</mat-icon>
+        </button>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('reserved')"
+                (click)="toggleStatusFilter('reserved')"
+                [style.background-color]="isStatusSelected('reserved') ? '#8b5cf6' : '#e5e7eb'"
+                matTooltip="Reservada">
+          <mat-icon [style.color]="isStatusSelected('reserved') ? 'white' : '#9ca3af'">event</mat-icon>
+        </button>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('occupied')"
+                (click)="toggleStatusFilter('occupied')"
+                [style.background-color]="isStatusSelected('occupied') ? '#ef4444' : '#e5e7eb'"
+                matTooltip="Ocupada">
+          <mat-icon [style.color]="isStatusSelected('occupied') ? 'white' : '#9ca3af'">hotel</mat-icon>
+        </button>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('dirty')"
+                (click)="toggleStatusFilter('dirty')"
+                [style.background-color]="isStatusSelected('dirty') ? '#f59e0b' : '#e5e7eb'"
+                matTooltip="Sucia">
+          <mat-icon [style.color]="isStatusSelected('dirty') ? 'white' : '#9ca3af'">warning</mat-icon>
+        </button>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('cleaning')"
+                (click)="toggleStatusFilter('cleaning')"
+                [style.background-color]="isStatusSelected('cleaning') ? '#3b82f6' : '#e5e7eb'"
+                matTooltip="En Limpieza">
+          <mat-icon [style.color]="isStatusSelected('cleaning') ? 'white' : '#9ca3af'">cleaning_services</mat-icon>
+        </button>
+        <button mat-mini-fab 
+                [class.active]="isStatusSelected('maintenance')"
+                (click)="toggleStatusFilter('maintenance')"
+                [style.background-color]="isStatusSelected('maintenance') ? '#6366f1' : '#e5e7eb'"
+                matTooltip="Mantenimiento">
+          <mat-icon [style.color]="isStatusSelected('maintenance') ? 'white' : '#9ca3af'">build</mat-icon>
+        </button>
+        
+        <div class="filter-divider"></div>
+        
+        <button mat-mini-fab 
+                (click)="toggleMapTheme()"
+                [style.background-color]="mapTheme === 'dark' ? '#1f2937' : '#f3f4f6'"
+                [matTooltip]="mapTheme === 'light' ? 'Modo Oscuro' : 'Modo Claro'">
+          <mat-icon [style.color]="mapTheme === 'dark' ? '#fbbf24' : '#6b7280'">
+            {{ mapTheme === 'light' ? 'dark_mode' : 'light_mode' }}
+          </mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

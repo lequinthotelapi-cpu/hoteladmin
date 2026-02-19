@@ -1,0 +1,55 @@
+.room-info {
+  padding: 16px 0;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 500;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: white;
+    }
+  }
+}
+
+mat-divider {
+  margin: 20px 0;
+}
+
+.actions-section {
+  padding: 8px 0;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 16px 0;
+    color: #1f2937;
+  }
+
+  .action-button {
+    width: 100%;
+    margin-bottom: 10px;
+    height: 44px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+

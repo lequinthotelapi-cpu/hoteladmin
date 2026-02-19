@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>Habitación {{ data.room.roomNumber }}</h2>
+
+<div mat-dialog-content>
+  <div class="room-info">
+    <div class="info-row">
+      <span class="label">Estado:</span>
+      <span class="status-badge" [style.background]="getStatusColor(data.room.displayStatus)">
+        {{ getRoomStatusLabel(data.room.displayStatus) }}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="label">Tipo:</span>
+      <span>{{ getRoomTypeLabel(data.room.roomType) }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Piso:</span>
+      <span>{{ data.room.floor }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Capacidad:</span>
+      <span>{{ data.room.capacity }} personas</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Precio:</span>
+      <span>${{ data.room.basePrice }}</span>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="actions-section">
+    <h3>Acciones Disponibles</h3>
+    
+    <button mat-raised-button color="primary" 
+            *ngIf="data.room.displayStatus === 'reserved'"
+            (click)="onAction('check-in')" class="action-button">
+      <mat-icon>login</mat-icon>
+      Check-in
+    </button>
+
+    <button mat-raised-button color="warn" 
+            *ngIf="data.room.displayStatus === 'occupied'"
+            (click)="onAction('check-out')" class="action-button">
+      <mat-icon>logout</mat-icon>
+      Check-out
+    </button>
+
+    <button mat-raised-button color="accent" 
+            *ngIf="data.room.displayStatus === 'occupied'"
+            (click)="onAction('view-account')" class="action-button">
+      <mat-icon>receipt</mat-icon>
+      Ver Cuenta
+    </button>
+
+    <button mat-raised-button color="primary"
+            *ngIf="data.room.displayStatus === 'cleaning'"
+            (click)="onAction('complete-cleaning')" class="action-button">
+      <mat-icon>check_circle</mat-icon>
+      Completar Limpieza
+    </button>
+
+    <button mat-stroked-button color="primary"
+            (click)="onAction('create-task')" class="action-button">
+      <mat-icon>add_task</mat-icon>
+      Crear Tarea
+    </button>
+
+    <button mat-stroked-button color="primary"
+            (click)="onAction('edit-room')" class="action-button">
+      <mat-icon>edit</mat-icon>
+      Editar Habitación
+    </button>
+  </div>
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

@@ -38,7 +38,8 @@
             "styles": [
               "src/styles.scss",
               "node_modules/sweetalert2/dist/sweetalert2.min.css",
-              "node_modules/angular-calendar/css/angular-calendar.css"
+              "node_modules/angular-calendar/css/angular-calendar.css",
+              "node_modules/tippy.js/dist/tippy.css"
             ],
             "scripts": [],
             "baseHref": "/",

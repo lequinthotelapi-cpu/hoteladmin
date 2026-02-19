@@ -12,13 +12,15 @@ import { RoomsComponent } from './rooms.component';
 import { RoomsListComponent } from './rooms-list/rooms-list.component';
 import { RoomsGridComponent } from './rooms-grid/rooms-grid.component';
 import { RoomCreateUpdateComponent } from './room-create-update/room-create-update.component';
+import { RoomMapActionsDialogComponent } from './room-map-actions-dialog/room-map-actions-dialog.component';
 
 @NgModule({
   declarations: [
     RoomsComponent,
     RoomsListComponent,
     RoomsGridComponent,
-    RoomCreateUpdateComponent
+    RoomCreateUpdateComponent,
+    RoomMapActionsDialogComponent
   ],
   imports: [
     CommonModule,

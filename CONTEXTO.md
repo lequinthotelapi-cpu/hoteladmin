@@ -43,7 +43,55 @@ const data = await firstValueFrom(observable$);
 
 ## Módulos Implementados
 
-### 1. Sistema de Notificaciones en Tiempo Real - v1.0.0 ✅
+### 1. Vista de Mapa de Habitaciones - v1.0.0 ✅
+Visualización interactiva de habitaciones mediante mapas SVG del hotel.
+
+**Componentes**:
+- `/workspace/src/app/features/private/rooms/room-map-actions-dialog/` - Diálogo de acciones
+- `/workspace/src/assets/img/hotel-map/` - Archivos SVG de mapas por piso
+- Integración en `RoomsComponent` con tercera vista (Grid, Lista, Mapa)
+
+**Características**:
+- **Mapas SVG interactivos** por piso del hotel
+- **Colores dinámicos** según estado de habitación en tiempo real
+- **Convención de IDs**: Habitaciones mapeadas como `room-{número}` en SVG
+- **Click para acciones**: Diálogo con información completa y acciones contextuales
+- **Estados visuales**: 6 estados con colores distintivos (available, reserved, occupied, dirty, cleaning, maintenance)
+- **Hover effects**: Transición suave de opacidad al pasar mouse
+- **Integración completa** con RoomStatusService para estados calculados
+
+**Mapeo de Habitaciones**:
+- Habitación 101 → `id="room-101"` en SVG
+- Habitación 205 → `id="room-205"` en SVG
+- Detección automática de elementos con prefijo `room-`
+
+**Diálogo de Acciones**:
+- Información: Número, estado, tipo, piso, capacidad, precio
+- Acciones contextuales según estado:
+  - Check-in (solo si `reserved`)
+  - Check-out (solo si `occupied`)
+  - Ver Cuenta (solo si `occupied`)
+  - Completar Limpieza (solo si `cleaning`)
+  - Crear Tarea (siempre)
+  - Editar Habitación (siempre)
+
+**Implementación Técnica**:
+- **NgZone.run()**: Crítico para ejecutar eventos del SVG dentro de zona de Angular
+- **ChangeDetectorRef**: Fuerza renderizado inicial del diálogo
+- **Carga asíncrona**: Parámetros cargados antes de abrir diálogo
+- **Manipulación SVG**: Query de elementos, aplicación de colores, eventos de click
+
+**Problemas Resueltos**:
+1. Diálogo no renderizaba hasta hacer click → Solución: NgZone.run()
+2. Arrays de parámetros vacíos → Solución: loadParameters() asíncrono
+3. Error "Should be run in update mode" → Solución: detectChanges() en ngAfterViewInit()
+4. Tooltip no seguía mouse → Decisión: Usar solo diálogo con click
+
+**Documentación**: `/workspace/ROOMS_MAP_VIEW.md`
+
+---
+
+### 2. Sistema de Notificaciones en Tiempo Real - v1.0.0 ✅
 Sistema completo de notificaciones con Firestore y alertas visuales.
 
 **Componentes**:
@@ -117,7 +165,7 @@ match /notifications/{notificationId} {
 
 ---
 
-### 2. Sistema de Permisos por Rol (RBAC) - v1.0.0 ✅
+### 3. Sistema de Permisos por Rol (RBAC) - v1.0.0 ✅
 Control de acceso basado en roles con gestión dinámica.
 
 **Componentes**:
@@ -174,7 +222,7 @@ this.permissionService.hasRouteAccess('/reports').subscribe(hasAccess => {
 
 ---
 
-### 3. Profile y Help - v1.0.0 ✅
+### 4. Profile y Help - v1.0.0 ✅
 Páginas de perfil de usuario y ayuda con documentación dinámica.
 
 **Profile** (`/profile`):
@@ -205,7 +253,7 @@ Páginas de perfil de usuario y ayuda con documentación dinámica.
 
 ---
 
-### 4. Dashboard Financiero - v1.0.0 ✅
+### 5. Dashboard Financiero - v1.0.0 ✅
 Dashboard con métricas financieras y KPIs hoteleros.
 
 **Componentes**:
@@ -247,7 +295,7 @@ Dashboard con métricas financieras y KPIs hoteleros.
 
 ---
 
-### 5. Housekeeping (Limpieza) - v2.0.0 ✅
+### 6. Housekeeping (Limpieza) - v2.0.0 ✅
 Sistema completo de gestión de tareas de limpieza y mantenimiento.
 
 **Componentes**:
@@ -306,7 +354,7 @@ Sistema completo de gestión de tareas de limpieza y mantenimiento.
 
 ---
 
-### 6. Menú Lateral Reorganizado - v1.1.0 ✅
+### 7. Menú Lateral Reorganizado - v1.1.0 ✅
 Menú lateral con grupos lógicos, botón de configuración en footer y accesos rápidos.
 
 **Grupos**:
@@ -344,7 +392,7 @@ Menú lateral con grupos lógicos, botón de configuración en footer y accesos 
 
 ---
 
-### 7. Invoices (Facturación) - v2.1.3 ✅
+### 8. Invoices (Facturación) - v2.1.3 ✅
 Sistema completo de facturación formal con generación de PDF.
 
 **Componentes**:
@@ -380,7 +428,7 @@ Sistema completo de facturación formal con generación de PDF.
 
 ---
 
-### 8. Guest Accounts (Cuentas de Huéspedes) - v1.1.0
+### 9. Guest Accounts (Cuentas de Huéspedes) - v1.1.0
 Sistema completo de gestión de folios que acumulan cargos durante la estadía.
 
 **Componentes**:
@@ -409,7 +457,7 @@ Sistema completo de gestión de folios que acumulan cargos durante la estadía.
 
 ---
 
-### 9. Estados de Habitación
+### 10. Estados de Habitación
 
 #### Estado "Dirty" (Sucia)
 Estado intermedio post check-out antes de limpieza.
@@ -450,7 +498,7 @@ getRoomsWithStatus(rooms$, bookings$): Observable<RoomWithStatus[]>
 
 ---
 
-### 10. Confirmar Reservas
+### 11. Confirmar Reservas
 Funcionalidad para confirmar/cancelar reservas pendientes.
 
 **Ubicación**: Bookings (Lista) y Calendar (Dialog)
@@ -971,6 +1019,7 @@ ngOnDestroy() {
 16. `/workspace/README.md` - Documentación general del template Fury
 17. `/workspace/CONTEXTO.md` - Este archivo
 18. `/workspace/PATRON_REPOSITORY.md` - Patrón Repository
+19. `/workspace/ROOMS_MAP_VIEW.md` - Vista de Mapa de Habitaciones ⭐
 
 ---
 
@@ -1013,6 +1062,10 @@ ngOnDestroy() {
 - UI actualizada con datos reales de usuario
 
 **Última Implementación**: 
+- Vista de Mapa de Habitaciones v1.0 con SVG interactivo ✅
+- Diálogo de acciones contextual por estado ✅
+- Integración con NgZone para detección de cambios ✅
+- Colores dinámicos en tiempo real según estado ✅
 - Sistema de Permisos por Rol (RBAC) v1.0 ✅
 - Profile y Help con documentación dinámica por rol ✅
 - Sistema de Notificaciones v1.0 con listeners en tiempo real ✅
@@ -1027,5 +1080,5 @@ ngOnDestroy() {
 - Botón de configuración movido a footer del sidenav ✅
 - Corrección crítica: Reemplazo de .toPromise() por firstValueFrom() ✅
 
-**Versión**: 2.4.0
+**Versión**: 2.5.0
 **Última Actualización**: 2024-02-16

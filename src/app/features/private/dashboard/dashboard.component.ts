@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookingService } from '../../../core/services/booking.service';
 import { RoomService } from '../../../core/services/room.service';
+import { RoomStatusService } from '../../../core/services/room-status.service';
 import { GuestAccountService } from '../../../core/services/guest-account.service';
 import { POSService } from '../../../core/services/pos.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -14,6 +15,7 @@ interface DashboardStats {
   occupiedRooms: number;
   totalRooms: number;
   dirtyRooms: number;
+  cleaningRooms: number;
   maintenanceRooms: number;
   salesToday: number;
   openAccounts: number;
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
     occupiedRooms: 0,
     totalRooms: 0,
     dirtyRooms: 0,
+    cleaningRooms: 0,
     maintenanceRooms: 0,
     salesToday: 0,
     openAccounts: 0,
@@ -54,6 +57,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private bookingService: BookingService,
     private roomService: RoomService,
+    private roomStatusService: RoomStatusService,
     private guestAccountService: GuestAccountService,
     private posService: POSService,
     private productService: ProductService
@@ -83,16 +87,18 @@ export class DashboardComponent implements OnInit {
   }
 
   private async loadRoomStats() {
-    const rooms = await firstValueFrom(
-      this.roomService.getAll().pipe(
-        map(rooms => rooms.filter(r => r.isActive))
-      )
+    const rooms$ = this.roomService.getAllRooms();
+    const bookings$ = this.bookingService.getAllBookings();
+    
+    const roomsWithStatus = await firstValueFrom(
+      this.roomStatusService.getRoomsWithStatus(rooms$, bookings$)
     );
 
-    this.stats.totalRooms = rooms.length;
-    this.stats.occupiedRooms = rooms.filter(r => r.status === 'occupied').length;
-    this.stats.dirtyRooms = rooms.filter(r => r.status === 'dirty').length;
-    this.stats.maintenanceRooms = rooms.filter(r => r.status === 'maintenance').length;
+    this.stats.totalRooms = roomsWithStatus.length;
+    this.stats.occupiedRooms = roomsWithStatus.filter(r => r.displayStatus === 'occupied').length;
+    this.stats.dirtyRooms = roomsWithStatus.filter(r => r.displayStatus === 'dirty').length;
+    this.stats.cleaningRooms = roomsWithStatus.filter(r => r.displayStatus === 'cleaning').length;
+    this.stats.maintenanceRooms = roomsWithStatus.filter(r => r.displayStatus === 'maintenance').length;
   }
 
   private async loadBookingStats() {
@@ -142,10 +148,13 @@ export class DashboardComponent implements OnInit {
   }
 
   private prepareChartData() {
+    const availableRooms = this.stats.totalRooms - this.stats.occupiedRooms - this.stats.dirtyRooms - this.stats.cleaningRooms - this.stats.maintenanceRooms;
+    
     this.roomStatusData = [
-      { name: 'Disponibles', value: this.stats.totalRooms - this.stats.occupiedRooms - this.stats.dirtyRooms - this.stats.maintenanceRooms },
+      { name: 'Disponibles', value: availableRooms },
       { name: 'Ocupadas', value: this.stats.occupiedRooms },
       { name: 'Sucias', value: this.stats.dirtyRooms },
+      { name: 'En Limpieza', value: this.stats.cleaningRooms },
       { name: 'Mantenimiento', value: this.stats.maintenanceRooms }
     ].filter(item => item.value > 0);
   }

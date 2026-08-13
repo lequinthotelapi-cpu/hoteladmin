@@ -17,5 +17,5 @@ export const environment = {
     vapidKey: "BMYz1eOUgBH8muhKrh4UjnSzj38T0Vx5DwmbgCtDYZFCyQopREDXZTbdtf3-JGepsCah1wcdtiWYMs8gJpiyrc8"
   },
   email: 'lequinthotel.api@gmail.com',
-  password: 'LeQuint2026.' //validar
+  password: 'LeQuint2026.' //valid
 };

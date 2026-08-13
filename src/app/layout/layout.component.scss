@@ -21,7 +21,10 @@
 
 fury-toolbar {
   position: relative;
-  z-index: 1;
+  // Debe quedar por encima de .content (z-index: 1) para que sus
+  // desplegables (usuario, notificaciones, búsqueda) no queden tapados
+  // por las tarjetas/diálogos de la página.
+  z-index: 10;
 }
 
 .page-bg {

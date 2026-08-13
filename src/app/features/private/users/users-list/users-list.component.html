@@ -90,6 +90,10 @@
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>
               </button>
+              <button mat-menu-item (click)="resetPassword(user)">
+                <mat-icon>lock_reset</mat-icon>
+                <span>Restablecer Contraseña</span>
+              </button>
               <button mat-menu-item (click)="resetSessions(user)" [disabled]="!user.activeSessionsCount || user.activeSessionsCount === 0">
                 <mat-icon>refresh</mat-icon>
                 <span>Resetear Sesiones</span>

@@ -31,6 +31,9 @@
   "postCreateCommand": "npm install && bash ./.devcontainer/install-claude.sh",
   "postStartCommand": "git config --global http.sslVerify false && git config --global user.name 'lequinthotelapi-cpu' && git config --global user.email 'tu_email@ejemplo.com' && bash ./.devcontainer/install-claude.sh",
   "remoteUser": "root",
+  "containerEnv": {
+    "PATH": "/root/.local/bin:${containerEnv:PATH}"
+  },
   "mounts": [
     "source=${localWorkspaceFolder}/.vscode,target=/workspace/.vscode,type=bind,consistency=cached"
   ]

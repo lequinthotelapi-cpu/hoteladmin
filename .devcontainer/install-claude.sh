@@ -25,3 +25,26 @@ echo "Installing Claude CLI..."
 curl -fsSL https://claude.ai/install.sh | bash
 
 echo "Claude CLI installation finished."
+
+# Try to find the installed binary in common locations and expose it via /usr/local/bin
+SEARCH_PATHS=("/root/.local/bin/claude" "$HOME/.local/bin/claude" "/usr/local/bin/claude" "/opt/claude/claude" "/usr/bin/claude")
+FOUND=""
+for p in "${SEARCH_PATHS[@]}"; do
+  if [ -x "$p" ]; then
+    FOUND="$p"
+    break
+  fi
+done
+
+if [ -n "$FOUND" ]; then
+  echo "Found claude binary at: $FOUND"
+  if [ ! -x "/usr/local/bin/claude" ]; then
+    echo "Creating symlink /usr/local/bin/claude -> $FOUND"
+    ln -sf "$FOUND" /usr/local/bin/claude || true
+  fi
+else
+  echo "Could not find claude binary in common locations."
+  echo "You can search manually: find / -name claude -type f 2>/dev/null"
+fi
+
+echo "Final PATH: $PATH"

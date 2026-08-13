@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -5,6 +6,18 @@ set -euo pipefail
 if command -v claude >/dev/null 2>&1; then
   echo "claude already installed"
   exit 0
+fi
+
+echo "Checking for curl..."
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl: not found. Attempting to install via apt-get..."
+  if command -v apt-get >/dev/null 2>&1; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y && apt-get install -y --no-install-recommends curl ca-certificates
+  else
+    echo "apt-get not available. Please install 'curl' manually inside the container and re-run this script."
+    exit 1
+  fi
 fi
 
 echo "Installing Claude CLI..."

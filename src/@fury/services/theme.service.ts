@@ -30,7 +30,7 @@ export class ThemeService {
     sidenavUserVisible: true,
     toolbarVisible: true,
     toolbarPosition: 'fixed',
-    footerVisible: true,
+    footerVisible: false,
     footerPosition: 'fixed'
   });
   config$ = this._configSubject.asObservable();
@@ -93,7 +93,7 @@ export class ThemeService {
           sidenavUserVisible: false,
           toolbarVisible: true,
           toolbarPosition: 'static',
-          footerVisible: true,
+          footerVisible: false,
           footerPosition: 'static'
         });
 
@@ -113,7 +113,7 @@ export class ThemeService {
           sidenavUserVisible: false,
           toolbarVisible: true,
           toolbarPosition: 'static',
-          footerVisible: true,
+          footerVisible: false,
           footerPosition: 'static'
         });
 
@@ -127,7 +127,7 @@ export class ThemeService {
           sidenavUserVisible: false,
           toolbarVisible: true,
           toolbarPosition: 'fixed',
-          footerVisible: true,
+          footerVisible: false,
           footerPosition: 'fixed'
         });
         break;
@@ -139,7 +139,7 @@ export class ThemeService {
           sidenavUserVisible: true,
           toolbarVisible: true,
           toolbarPosition: 'fixed',
-          footerVisible: true,
+          footerVisible: false,
           footerPosition: 'fixed'
         });
 
@@ -153,7 +153,7 @@ export class ThemeService {
           sidenavUserVisible: true,
           toolbarVisible: true,
           toolbarPosition: 'fixed',
-          footerVisible: true,
+          footerVisible: false,
           footerPosition: 'fixed'
         });
 

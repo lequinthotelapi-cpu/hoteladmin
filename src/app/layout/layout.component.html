@@ -32,6 +32,8 @@
     </mat-sidenav>
 
     <mat-sidenav-content class="content-container" fxLayout="column">
+      <div class="page-bg" aria-hidden="true"></div>
+
       <ng-container *ngIf="(toolbarPosition$ | async) === 'fixed'">
         <ng-container *ngTemplateOutlet="toolbar"></ng-container>
       </ng-container>

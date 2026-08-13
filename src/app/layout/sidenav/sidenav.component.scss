@@ -9,19 +9,51 @@
   top: 0;
   bottom: 0;
   width: $sidenav-width;
+
+  // Glass tokens — same recipe as dashboard/login, tuned to stay recognizably navy
+  --dash-glass-border: rgba(255, 255, 255, 0.10);
+  --dash-glass-highlight: rgba(255, 255, 255, 0.08);
+  --dash-overlay: linear-gradient(190deg, rgba(8, 45, 68, 0.86) 0%, rgba(11, 59, 89, 0.78) 55%, rgba(5, 219, 242, 0.14) 100%);
+}
+
+:host-context(.fury-ocean-dark) {
+  --dash-glass-border: rgba(255, 255, 255, 0.08);
+  --dash-glass-highlight: rgba(255, 255, 255, 0.06);
+  --dash-overlay: linear-gradient(190deg, rgba(3, 14, 24, 0.9) 0%, rgba(5, 25, 40, 0.84) 55%, rgba(5, 219, 242, 0.10) 100%);
 }
 
 .sidenav {
+  position: relative;
   height: 100%;
+  overflow: hidden;
+  isolation: isolate;
   will-change: width;
 }
 
+// Real photo backdrop — same room.jpg as the dashboard, but the overlay is
+// dominated by navy so the sidenav still reads as "the sidebar", just glass.
+.page-bg {
+  position: absolute;
+  inset: -40px;
+  z-index: 0;
+  background-image: var(--dash-overlay), url('/assets/img/backgrounds/room.jpg');
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  filter: blur(7px) saturate(115%);
+  transform: scale(1.02);
+}
+
 .sidenav-toolbar {
+  position: relative;
+  z-index: 1;
   padding: 0 math.div($spacing, 1.333) 0 $spacing;
   height: $sidenav-toolbar-height;
   min-height: $sidenav-toolbar-height;
   max-height: $sidenav-toolbar-height;
   overflow: hidden;
+  background: transparent !important;
+  border-bottom: 1px solid var(--dash-glass-border);
 
   .sidenav-toolbar-icon {
     vertical-align: text-top;
@@ -64,8 +96,12 @@
 }
 
 .sidenav-user {
+  position: relative;
+  z-index: 1;
   text-align: center;
   margin-bottom: 8px;
+  background: transparent !important;
+  border-bottom: 1px solid var(--dash-glass-border);
 
   .sidenav-user-image {
     display: block;
@@ -117,11 +153,17 @@
 }
 
 .sidenav-items {
+  position: relative;
+  z-index: 1;
   min-height: 0;
+  background: transparent !important;
 }
 
 .sidenav-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  border-top: 1px solid var(--dash-glass-border);
   padding: 8px;
   
   .sidenav-config-button {

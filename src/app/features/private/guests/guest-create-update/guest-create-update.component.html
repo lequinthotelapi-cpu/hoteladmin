@@ -14,7 +14,7 @@
           <div class="content" fxLayout="column" fxLayoutGap="16px">
             <div class="photo-section" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px">
               <div class="photo-preview">
-                <img [src]="photoPreview || 'assets/img/avatars/default.jpg'" alt="Foto">
+                <img [src]="photoPreview || 'assets/img/avatars/default.jpg'" alt="Foto" (error)="$any($event.target).src='assets/img/avatars/default.jpg'">
               </div>
               <div fxLayout="column" fxLayoutGap="8px">
                 <input type="file" #photoInput accept="image/*" (change)="onPhotoSelected($event)" style="display: none">

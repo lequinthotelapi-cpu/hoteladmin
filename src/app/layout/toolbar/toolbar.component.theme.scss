@@ -11,12 +11,16 @@ fury-toolbar {
   }
 
   .toolbar {
-    background: $toolbar-background;
+    background: rgba($toolbar-background, 0.55);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border-bottom: 1px solid var(--glass-border);
     color: $toolbar-color;
-    @include mat.elevation($toolbar-elevation);
+    @include mat.elevation(0);
+    box-shadow: none;
 
     .toolbar-button {
-      border-left-color: $toolbar-button-separator-color;
+      border-left-color: var(--glass-border);
     }
 
     .toolbar-logo {
@@ -28,13 +32,17 @@ fury-toolbar {
 fury-toolbar-user {
   .toolbar-user {
     .button.open {
-      background: $theme-background-hover;
+      background: var(--glass-row-hover);
     }
   }
 
   .dropdown {
-    background: $theme-card;
-    @include mat.elevation($toolbar-user-dropdown-elevation);
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow: var(--glass-shadow);
 
     .list {
       .list-item {
@@ -52,11 +60,15 @@ fury-toolbar-user {
 
 fury-toolbar-notifications {
   .dropdown {
-    background: $theme-card;
-    @include mat.elevation($toolbar-notification-elevation);
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow: var(--glass-shadow);
 
     .dropdown-header {
-      border-color: $theme-divider;
+      border-color: var(--glass-border);
     }
 
     .notification {
@@ -117,13 +129,16 @@ fury-toolbar-search-bar {
     }
 
     .search-input {
-      background: $toolbar-search-background;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
       color: $theme-secondary-text;
     }
 
     &:hover {
       .search-input {
-        background: $theme-status-bar;
+        background: var(--glass-bg-strong);
       }
     }
 
@@ -139,10 +154,13 @@ fury-toolbar-search-bar {
     }
 
     .search-dropdown {
-      background: $theme-card;
+      background: var(--glass-bg-strong);
       color: $theme-text;
-
-      @include mat.elevation($toolbar-search-dropdown-elevation);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      box-shadow: var(--glass-shadow);
 
       .content {
         .heading {

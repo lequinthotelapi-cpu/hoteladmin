@@ -7,7 +7,7 @@
         <mat-card-content>
           <div class="profile-header">
             <div class="avatar-container">
-              <img [src]="user.avatarUrl || 'assets/img/avatars/default.jpg'" class="profile-avatar">
+              <img [src]="user.avatarUrl || 'assets/img/avatars/default.jpg'" class="profile-avatar" (error)="$any($event.target).src='assets/img/avatars/default.jpg'">
               <div class="status-indicator" [class.active]="user.active"></div>
             </div>
             <h2 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h2>

@@ -17,9 +17,10 @@
         <ng-container matColumnDef="avatar">
           <th mat-header-cell *matHeaderCellDef class="image-cell"></th>
           <td mat-cell *matCellDef="let user" class="image-cell">
-            <img [src]="user.avatarUrl || 'assets/img/avatars/default.jpg'" 
-                 class="user-avatar" 
-                 [alt]="user.firstName">
+            <img [src]="user.avatarUrl || 'assets/img/avatars/default.jpg'"
+                 class="user-avatar"
+                 [alt]="user.firstName"
+                 (error)="$any($event.target).src='assets/img/avatars/default.jpg'">
           </td>
         </ng-container>
 

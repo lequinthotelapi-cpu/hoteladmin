@@ -3,7 +3,9 @@
 }
 
 .fury-page-layout-header {
-  background: $theme-color-primary;
+  background: rgba($theme-color-primary, 0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   color: $theme-color-primary-contrast;
 
   fury-breadcrumbs {

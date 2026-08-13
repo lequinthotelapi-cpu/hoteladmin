@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "./@fury/styles/core";
 @import "./app/app.theme";
+@import "./styles/glass";
 
 /* SweetAlert2 backdrop - Ocean theme */
 .swal2-container {
@@ -29,65 +30,113 @@
   margin: 0 !important;
 }
 
-/* Button theme colors */
-.fury-ocean {
+/* Pill shape + frosted-glass sheen for every button, everywhere — not just
+   inside dialogs. Solid enough to read as a clear call to action, but with
+   the same blur/highlight/lift language as the cards and tabs. */
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 999px !important;
+  transition: transform .2s ease, box-shadow .2s ease !important;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.fury-ocean, .fury-ocean-dark {
   .mat-mdc-raised-button.mat-primary {
-    --mdc-protected-button-container-color: #115D8C !important;
+    --mdc-protected-button-container-color: rgba(17, 93, 140, 0.85) !important;
     --mdc-protected-button-label-text-color: white !important;
-    
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow: 0 8px 20px rgba(17, 93, 140, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+
     &:hover {
-      --mdc-protected-button-container-color: #0e4f75 !important;
+      --mdc-protected-button-container-color: rgba(14, 79, 117, 0.9) !important;
+      box-shadow: 0 12px 28px rgba(17, 93, 140, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
     }
   }
-  
+
   .mat-mdc-raised-button.mat-accent {
-    --mdc-protected-button-container-color: #9498F2 !important;
+    --mdc-protected-button-container-color: rgba(148, 152, 242, 0.85) !important;
     --mdc-protected-button-label-text-color: white !important;
-    
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow: 0 8px 20px rgba(148, 152, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+
     &:hover {
-      --mdc-protected-button-container-color: #777bec !important;
+      --mdc-protected-button-container-color: rgba(119, 123, 236, 0.9) !important;
+      box-shadow: 0 12px 28px rgba(148, 152, 242, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
     }
   }
-  
+
   .mat-mdc-button.mat-primary {
-    --mdc-text-button-label-text-color: #115D8C !important;
-    
+    --mdc-text-button-label-text-color: var(--glass-text-primary) !important;
+
     &:hover {
-      background: rgba(17, 93, 140, 0.08) !important;
+      background: var(--glass-row-hover) !important;
     }
   }
-  
+
   .mat-mdc-outlined-button.mat-primary {
-    --mdc-outlined-button-label-text-color: #115D8C !important;
-    --mdc-outlined-button-outline-color: #115D8C !important;
-    
+    --mdc-outlined-button-label-text-color: var(--glass-text-primary) !important;
+    --mdc-outlined-button-outline-color: var(--glass-border) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+
     &:hover {
-      background: rgba(17, 93, 140, 0.08) !important;
+      background: var(--glass-bg-strong) !important;
+    }
+  }
+
+  .mat-mdc-mini-fab, .mat-mdc-fab {
+    &.mat-primary {
+      --mdc-fab-container-color: rgba(17, 93, 140, 0.85) !important;
+    }
+
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow: 0 8px 20px rgba(17, 93, 140, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+    transition: transform .2s ease, box-shadow .2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
     }
   }
 }
 
-/* Button toggle group */
+/* Button toggle group — same segmented-pill language as the tabs */
 .mat-button-toggle-group {
-  border: 1px solid #e0e0e0 !important;
-  border-radius: 4px !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 999px !important;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--glass-shadow);
   overflow: hidden;
+  padding: 3px;
 }
 
-.fury-ocean .mat-button-toggle {
+.mat-button-toggle {
   border: none !important;
-  
+  border-radius: 999px !important;
+  margin: 0 1px;
+
   &.mat-button-toggle-checked {
-    background: #115D8C !important;
-    color: white !important;
+    background: var(--glass-bg-strong) !important;
+    color: var(--glass-text-primary) !important;
+    font-weight: 700;
   }
-  
+
   &:not(.mat-button-toggle-checked) {
-    background: white !important;
-    color: #424242 !important;
-    
+    background: transparent !important;
+    color: var(--glass-text-secondary) !important;
+
     &:hover {
-      background: rgba(17, 93, 140, 0.08) !important;
+      background: var(--glass-row-hover) !important;
     }
   }
 }
@@ -138,9 +187,12 @@
 .mat-horizontal-stepper-header-container {
   margin-bottom: 32px !important;
   padding: 16px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--glass-shadow);
 }
 
 .mat-horizontal-content-container {
@@ -166,16 +218,50 @@
   padding: 24px 16px !important;
 }
 
+// Segmented glass pill, not an underlined strip — the active tab lights up
+// in its own glass capsule instead of a thin ink-bar.
 .mat-mdc-tab-group {
   .mat-mdc-tab-header {
     margin-bottom: 24px !important;
-    border-bottom: 2px solid #e0e0e0 !important;
+    border-bottom: none !important;
   }
-  
+
+  .mat-mdc-tab-label-container {
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .mdc-tab-indicator {
+    display: none !important;
+  }
+
   .mat-mdc-tab {
     min-width: 120px !important;
     padding: 0 24px !important;
-    height: 56px !important;
+    height: 44px !important;
+    border-radius: 999px !important;
+    margin: 0 2px;
+    transition: background-color .25s ease, color .25s ease;
+
+    .mdc-tab__text-label {
+      color: var(--glass-text-secondary) !important;
+      transition: color .25s ease;
+    }
+
+    &.mdc-tab--active {
+      background: var(--glass-bg-strong);
+      box-shadow: var(--glass-shadow);
+
+      .mdc-tab__text-label {
+        color: var(--glass-text-primary) !important;
+        font-weight: 700;
+      }
+    }
   }
 }
 
@@ -192,13 +278,16 @@
 .mat-mdc-dialog-title {
   margin: 0 !important;
   padding: 20px 24px !important;
-  background: linear-gradient(135deg, #115D8C 0%, #0B3B59 100%) !important;
+  background: linear-gradient(135deg, rgba(17, 93, 140, 0.6) 0%, rgba(11, 59, 89, 0.6) 100%) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   color: white !important;
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
+  font-family: 'Manrope', var(--font-family), sans-serif !important;
   font-size: 18px !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
   
   mat-icon {
@@ -220,29 +309,38 @@
 .mat-mdc-dialog-actions {
   margin: 0 !important;
   padding: 16px 24px !important;
-  background: linear-gradient(to top, #f5f5f5 0%, #fafafa 100%) !important;
-  border-top: 1px solid #e0e0e0 !important;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.05) !important;
+  background: transparent !important;
+  border-top: 1px solid var(--glass-border) !important;
   min-height: 64px !important;
-  
+
   .mat-mdc-button:not(.mat-mdc-raised-button) {
-    background: #f5f5f5 !important;
-    border: 1px solid #e0e0e0 !important;
-    --mdc-text-button-label-text-color: #424242 !important;
-    
+    border-radius: 999px !important;
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    --mdc-text-button-label-text-color: var(--glass-text-primary) !important;
+    transition: transform .2s ease, box-shadow .2s ease;
+
     &:hover {
-      background: #eeeeee !important;
+      transform: translateY(-1px);
+      box-shadow: var(--glass-shadow);
     }
   }
-  
+
   .mat-mdc-raised-button {
-    background: linear-gradient(135deg, #9498F2 0%, #777bec 100%) !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, rgba(148, 152, 242, 0.9) 0%, rgba(119, 123, 236, 0.9) 100%) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
     color: white !important;
     --mdc-protected-button-label-text-color: white !important;
-    box-shadow: 0 2px 4px rgba(148, 152, 242, 0.3) !important;
-    
+    box-shadow: 0 8px 20px rgba(148, 152, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transition: transform .2s ease, box-shadow .2s ease;
+
     &:hover {
-      box-shadow: 0 4px 8px rgba(148, 152, 242, 0.4) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(148, 152, 242, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
     }
   }
 }

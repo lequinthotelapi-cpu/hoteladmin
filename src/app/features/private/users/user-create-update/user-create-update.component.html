@@ -5,7 +5,7 @@
     <!-- Avatar -->
     <div class="avatar-section">
       <div class="avatar-preview">
-        <img [src]="avatarPreview || 'assets/img/avatars/default.jpg'" alt="Avatar">
+        <img [src]="avatarPreview || 'assets/img/avatars/default.jpg'" alt="Avatar" (error)="$any($event.target).src='assets/img/avatars/default.jpg'">
       </div>
       <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
       <button mat-stroked-button type="button" (click)="fileInput.click()">

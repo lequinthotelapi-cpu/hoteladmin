@@ -1,4 +1,6 @@
 <div class="sidenav" fxLayout="column">
+  <div class="page-bg" aria-hidden="true"></div>
+
   <div class="sidenav-toolbar" fxLayout="row" fxLayoutAlign="start center">
     <div class="sidenav-toolbar-icon">
       <svg viewBox="0 0 201 320" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +73,7 @@ c0 80 -1 145 -3 145 -1 0 -11 -14 -21 -32z"/>
 
   <fury-scrollbar class="sidenav-items" fxFlex="auto">
     <div *ngIf="sidenavUserVisible$ | async" class="sidenav-user">
-      <img class="sidenav-user-image" [src]="userData?.avatarUrl || 'assets/img/avatars/default.jpg'">
+      <img class="sidenav-user-image" [src]="userData?.avatarUrl || 'assets/img/avatars/default.jpg'" (error)="$any($event.target).src='assets/img/avatars/default.jpg'">
       <h4 class="sidenav-user-name">{{ userData?.firstName || 'Usuario' }}</h4>
       <h5 class="sidenav-user-lastname">{{ userData?.lastName || '' }}</h5>
       <h5 class="sidenav-user-role">{{ getRoleLabel(userData?.role) }}</h5>

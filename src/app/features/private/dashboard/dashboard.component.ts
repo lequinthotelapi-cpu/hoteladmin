@@ -49,8 +49,9 @@ export class DashboardComponent implements OnInit {
   roomStatusData: any[] = [];
   occupancyWeekData: any[] = [];
 
+  // Disponibles, Ocupadas, Sucias, En Limpieza, Mantenimiento — derivado de la paleta Ocean
   colorScheme = {
-    domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5']
+    domain: ['#16A34A', '#115D8C', '#F59E0B', '#05DBF2', '#9498F2']
   };
 
   constructor(

@@ -5,9 +5,9 @@
   </div>
 
   <!-- Content -->
-  <div *ngIf="!loading">
+  <div *ngIf="!loading" class="dashboard-content">
     <!-- Header -->
-    <div class="dashboard-header">
+    <div class="dashboard-header glass-panel">
       <h1>Dashboard</h1>
       <div class="date">{{ currentDate | date:'fullDate' }}</div>
     </div>
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Resumen del Día -->
-    <mat-card class="summary-card">
+    <mat-card class="summary-card glass-panel">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>today</mat-icon>
@@ -99,7 +99,7 @@
       <mat-card-content>
         <div class="summary-grid">
           <div class="summary-item">
-            <mat-icon class="arrivals">flight_land</mat-icon>
+            <div class="icon-chip arrivals"><mat-icon>flight_land</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Llegadas</div>
               <div class="summary-value">{{ stats.arrivalsToday }}</div>
@@ -107,7 +107,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="departures">flight_takeoff</mat-icon>
+            <div class="icon-chip departures"><mat-icon>flight_takeoff</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Salidas</div>
               <div class="summary-value">{{ stats.departuresToday }}</div>
@@ -115,7 +115,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="occupied">hotel</mat-icon>
+            <div class="icon-chip occupied"><mat-icon>hotel</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Ocupadas</div>
               <div class="summary-value">{{ stats.occupiedRooms }}/{{ stats.totalRooms }}</div>
@@ -123,7 +123,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="dirty">cleaning_services</mat-icon>
+            <div class="icon-chip dirty"><mat-icon>cleaning_services</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Por Limpiar</div>
               <div class="summary-value">{{ stats.dirtyRooms }}</div>
@@ -131,7 +131,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="maintenance">build</mat-icon>
+            <div class="icon-chip maintenance"><mat-icon>build</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Mantenimiento</div>
               <div class="summary-value">{{ stats.maintenanceRooms }}</div>
@@ -139,7 +139,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="sales">attach_money</mat-icon>
+            <div class="icon-chip sales"><mat-icon>attach_money</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Ventas Hoy</div>
               <div class="summary-value">{{ stats.salesToday | currency:'USD':'symbol':'1.0-0' }}</div>
@@ -147,7 +147,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="accounts">receipt_long</mat-icon>
+            <div class="icon-chip accounts"><mat-icon>receipt_long</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Cuentas Abiertas</div>
               <div class="summary-value">{{ stats.openAccounts }}</div>
@@ -155,7 +155,7 @@
           </div>
 
           <div class="summary-item">
-            <mat-icon class="occupancy">show_chart</mat-icon>
+            <div class="icon-chip occupancy"><mat-icon>show_chart</mat-icon></div>
             <div class="summary-content">
               <div class="summary-label">Ocupación</div>
               <div class="summary-value">{{ occupancyRate | number:'1.0-0' }}%</div>
@@ -166,7 +166,7 @@
     </mat-card>
 
     <!-- Alertas -->
-    <mat-card class="alerts-card" *ngIf="stats.dirtyRooms > 0 || stats.lowStockProducts > 0">
+    <mat-card class="alerts-card glass-panel" *ngIf="stats.dirtyRooms > 0 || stats.lowStockProducts > 0">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>notifications_active</mat-icon>
@@ -191,7 +191,7 @@
 
     <!-- Gráficos -->
     <div class="charts-section">
-      <mat-card class="chart-card">
+      <mat-card class="chart-card glass-panel">
         <mat-card-header>
           <mat-card-title>Estado de Habitaciones</mat-card-title>
         </mat-card-header>

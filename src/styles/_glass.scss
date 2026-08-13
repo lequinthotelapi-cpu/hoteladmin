@@ -1,0 +1,187 @@
+// Shared glassmorphism design system — applied globally so every real feature
+// page (mat-card, dialogs, tables, page headers) inherits the same look
+// established in login / dashboard / sidenav, without editing each module.
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-bg-strong: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-highlight: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 20px 50px rgba(5, 20, 35, 0.18), inset 0 1px 0 var(--glass-highlight);
+  --glass-shadow-hover: 0 28px 64px rgba(5, 20, 35, 0.24), inset 0 1px 0 var(--glass-highlight);
+  --glass-text-primary: #0B3B59;
+  --glass-text-secondary: rgba(11, 59, 89, 0.68);
+  --glass-table-header: rgba(11, 59, 89, 0.06);
+  --glass-row-hover: rgba(11, 59, 89, 0.05);
+  --glass-field-bg: rgba(255, 255, 255, 0.45);
+}
+
+.fury-ocean-dark {
+  --glass-bg: rgba(6, 22, 36, 0.42);
+  --glass-bg-strong: rgba(6, 22, 36, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.09);
+  --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--glass-highlight);
+  --glass-shadow-hover: 0 28px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-highlight);
+  --glass-text-primary: #F0F1F2;
+  --glass-text-secondary: rgba(240, 241, 242, 0.68);
+  --glass-table-header: rgba(255, 255, 255, 0.05);
+  --glass-row-hover: rgba(255, 255, 255, 0.04);
+  --glass-field-bg: rgba(255, 255, 255, 0.07);
+}
+
+@keyframes glassFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Headings pick up the same display face used on login/dashboard.
+h1, h2,
+.mat-mdc-card-title,
+.mat-mdc-dialog-title,
+.fury-page-layout-header .title {
+  font-family: 'Manrope', var(--font-family), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+// Every elevated mat-card, site-wide, becomes a frosted glass panel.
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: transparent;
+  --mdc-outlined-card-container-color: transparent;
+  background-color: var(--glass-bg) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: var(--glass-shadow) !important;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease;
+}
+
+// Dialogs (create/edit forms) get the same treatment so modals feel like
+// part of the same system rather than plain white sheets.
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: transparent;
+
+  .mdc-dialog__surface {
+    background-color: var(--glass-bg-strong) !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    box-shadow: var(--glass-shadow) !important;
+  }
+
+  .mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: var(--glass-field-bg);
+    --mdc-filled-text-field-focus-active-indicator-color: var(--glass-text-primary);
+  }
+}
+
+// Tables sit transparently on whatever glass surface hosts them (card or
+// page canvas) instead of painting their own opaque rectangle.
+.mat-mdc-table {
+  background: transparent !important;
+
+  .mat-mdc-header-row {
+    background: var(--glass-table-header);
+  }
+
+  .mat-mdc-row:hover {
+    background: var(--glass-row-hover);
+  }
+}
+
+// fury-card — the shared card used by bookings, rooms, guest-accounts,
+// front-desk and several dashboard widgets.
+.fury-card {
+  background-color: var(--glass-bg) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: var(--glass-shadow) !important;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease;
+}
+
+// fury-list — the shared table/list wrapper (users, inventory, and others).
+fury-list {
+  background-color: var(--glass-bg) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: var(--glass-shadow) !important;
+
+  .fury-list-header,
+  .fury-filter-input,
+  .mat-mdc-header-row,
+  .paginator {
+    background: transparent !important;
+  }
+}
+
+// ngx-charts ships very light default text colors (built for a plain white
+// canvas), which disappear against the glass/photo backdrop.
+.pie-label {
+  fill: var(--glass-text-primary) !important;
+  font-weight: 700 !important;
+}
+
+.chart-legend {
+  .legend-labels {
+    background: transparent !important;
+  }
+
+  .legend-label {
+    color: var(--glass-text-primary) !important;
+
+    .legend-label-text {
+      color: var(--glass-text-primary) !important;
+    }
+  }
+
+  .legend-title-text {
+    color: var(--glass-text-primary) !important;
+  }
+}
+
+// Paginator footer — previously a plain opaque white bar under every table;
+// now blends into whatever glass surface (card / fury-list) it sits inside.
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--glass-text-secondary);
+  --mat-paginator-enabled-icon-color: var(--glass-text-secondary);
+  --mat-paginator-disabled-icon-color: var(--glass-text-secondary);
+  --mat-paginator-select-trigger-text-color: var(--glass-text-primary);
+}
+
+// The custom ".page-container / .page-header" convention used across several
+// modules (rooms, invoices, cash-register, transactions, permissions, ...).
+.page-container {
+  position: relative;
+}
+
+.page-header {
+  padding: 14px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--glass-shadow);
+  animation: glassFadeUp .4s ease both;
+
+  fury-breadcrumbs .crumb.current {
+    color: var(--glass-text-primary) !important;
+    font-weight: 700;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header,
+  .mat-mdc-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}

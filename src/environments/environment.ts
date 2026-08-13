@@ -15,5 +15,7 @@ export const environment = {
     appId: "1:803175500602:web:0e920a81f67bbbce8bde03",
     measurementId: "G-PVCGRNJPRZ",
     vapidKey: "BMYz1eOUgBH8muhKrh4UjnSzj38T0Vx5DwmbgCtDYZFCyQopREDXZTbdtf3-JGepsCah1wcdtiWYMs8gJpiyrc8"
-  }
+  },
+  email: 'lequinthotel.api@gmail.com',
+  password: 'LeQuint2026.' //validar
 };

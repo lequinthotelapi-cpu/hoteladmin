@@ -12,7 +12,8 @@
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
         "ms-vscode.vscode-json",
-        "amazonwebservices.amazon-q-vscode"
+        "amazonwebservices.amazon-q-vscode",
+        "anthropic.claude-code"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",

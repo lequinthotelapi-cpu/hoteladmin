@@ -24,6 +24,13 @@ npm start
 ```
 Servidor disponible en: `http://localhost:4200`
 
+### 4. Extensión Claude Code
+La extensión `Claude Code for VS Code` (`anthropic.claude-code`) queda instalada automáticamente en el Dev Container.
+Si no aparece, reconstruye el contenedor con:
+```bash
+Ctrl+Shift+P → "Dev Containers: Rebuild Container"
+```
+
 ## 🔄 Comandos Diarios
 
 ### Abrir/Cerrar Dev Container

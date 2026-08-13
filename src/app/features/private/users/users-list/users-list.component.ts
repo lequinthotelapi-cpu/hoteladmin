@@ -169,6 +169,23 @@ export class UsersListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async resetPassword(user: User) {
+    const confirmed = await this.alertService.confirm(
+      `Se enviará un correo a ${user.email} para que ${user.firstName} ${user.lastName} restablezca su contraseña`,
+      '¿Restablecer contraseña?',
+      'Sí, enviar correo'
+    );
+
+    if (confirmed) {
+      try {
+        await this.userService.sendPasswordReset(user.email);
+        this.alertService.success('Correo de restablecimiento enviado');
+      } catch (error: any) {
+        this.alertService.error(error.message || 'Error al enviar el correo de restablecimiento');
+      }
+    }
+  }
+
   async deleteUser(user: User) {
     const confirmed = await this.alertService.confirmDelete(`${user.firstName} ${user.lastName}`);
     

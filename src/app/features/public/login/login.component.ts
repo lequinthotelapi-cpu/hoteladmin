@@ -15,6 +15,8 @@ import { ErrorHandler } from '../../../core/utils/error-handler';
 })
 export class LoginComponent implements OnInit {
 
+  private static readonly REMEMBER_EMAIL_KEY = 'rememberedEmail';
+
   form: UntypedFormGroup;
 
   inputType = 'password';
@@ -30,19 +32,29 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    const rememberedEmail = localStorage.getItem(LoginComponent.REMEMBER_EMAIL_KEY) || '';
+
     this.form = this.fb.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
+      email: [rememberedEmail, Validators.required],
+      password: ['', Validators.required],
+      rememberMe: [!!rememberedEmail]
     });
   }
 
   async send() {
     if (this.form.valid) {
       try {
-        const { email, password } = this.form.value;
+        const { email, password, rememberMe } = this.form.value;
         this.alertService.loading('Iniciando sesión...');
         await this.authService.signIn(email, password);
         this.alertService.close();
+
+        if (rememberMe) {
+          localStorage.setItem(LoginComponent.REMEMBER_EMAIL_KEY, email);
+        } else {
+          localStorage.removeItem(LoginComponent.REMEMBER_EMAIL_KEY);
+        }
+
         this.router.navigate(['/dashboard']);
         this.alertService.toast('Sesión iniciada correctamente', 'success');
       } catch (error: any) {

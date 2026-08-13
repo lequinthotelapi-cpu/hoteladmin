@@ -12,33 +12,27 @@
     <div class="padding" fxLayout="column" fxLayoutGap="16px" [formGroup]="form">
       <div fxFlex="auto" fxLayout="column">
         <mat-form-field fxFlex="grow">
-          <mat-label>E-Mail</mat-label>
+          <mat-label>Correo electrónico</mat-label>
           <input matInput required formControlName="email">
-          <mat-error *ngIf="form.get('email').hasError('required')">We need an email address to log you in</mat-error>
+          <mat-error *ngIf="form.get('email').hasError('required')">Ingresa tu correo electrónico</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="grow">
-          <mat-label>Password</mat-label>
+          <mat-label>Contraseña</mat-label>
           <input matInput [type]="inputType" formControlName="password" required>
-          <button type="button" mat-icon-button matSuffix (click)="toggleVisibility()" matTooltip="Toggle Visibility">
+          <button type="button" mat-icon-button matSuffix (click)="toggleVisibility()" matTooltip="Mostrar/ocultar contraseña">
             <mat-icon *ngIf="visible">visibility</mat-icon>
             <mat-icon *ngIf="!visible">visibility_off</mat-icon>
           </button>
-          <mat-hint>Click the eye to toggle visibility</mat-hint>
-          <mat-error *ngIf="form.get('password').hasError('required')">We need a password to log you in</mat-error>
+          <mat-error *ngIf="form.get('password').hasError('required')">Ingresa tu contraseña</mat-error>
         </mat-form-field>
       </div>
 
-      <div fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-checkbox class="caption">Remember Me</mat-checkbox>
-        <a class="caption" [routerLink]="['/forgot-password']">Forgot Password?</a>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <mat-checkbox class="caption" formControlName="rememberMe">Recordar usuario</mat-checkbox>
       </div>
       <button type="button" color="primary" mat-raised-button class="sign-in-btn" (click)="send()">
-        SIGN IN
+        Ingresar
       </button>
-      <p class="secondary-text text-center">
-        Don't have an account?<br/>
-        <a [routerLink]="['/register']">Click here to create one</a>
-      </p>
     </div>
   </div>
 </div>

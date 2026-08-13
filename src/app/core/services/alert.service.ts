@@ -12,7 +12,7 @@ export class AlertService {
       title,
       text: message,
       confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#4caf50',
+      confirmButtonColor: '#16A34A',
       timer: 3000,
       timerProgressBar: true
     });
@@ -24,7 +24,7 @@ export class AlertService {
       title,
       text: message,
       confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#f44336'
+      confirmButtonColor: '#DC2626'
     });
   }
 
@@ -34,7 +34,7 @@ export class AlertService {
       title,
       text: message,
       confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#ff9800'
+      confirmButtonColor: '#F59E0B'
     });
   }
 
@@ -44,12 +44,12 @@ export class AlertService {
       title,
       text: message,
       confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#2196f3'
+      confirmButtonColor: '#115D8C'
     });
   }
 
   async confirm(
-    message: string, 
+    message: string,
     title: string = '¿Estás seguro?',
     confirmText: string = 'Sí, continuar',
     cancelText: string = 'Cancelar'
@@ -61,8 +61,8 @@ export class AlertService {
       showCancelButton: true,
       confirmButtonText: confirmText,
       cancelButtonText: cancelText,
-      confirmButtonColor: '#2196f3',
-      cancelButtonColor: '#9e9e9e',
+      confirmButtonColor: '#115D8C',
+      cancelButtonColor: '#64748B',
       reverseButtons: true
     });
     return result.isConfirmed;
@@ -76,8 +76,8 @@ export class AlertService {
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#f44336',
-      cancelButtonColor: '#9e9e9e',
+      confirmButtonColor: '#DC2626',
+      cancelButtonColor: '#64748B',
       reverseButtons: true
     });
     return result.isConfirmed;

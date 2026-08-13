@@ -1,15 +1,29 @@
 .page {
   height: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
 }
 
 .toolbar {
+  flex: none;
   padding: 16px 24px;
-  background: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: var(--glass-shadow);
 
   .title {
-    font-size: 24px;
-    font-weight: 500;
+    font-family: 'Manrope', var(--font-family), sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--glass-text-primary);
+    text-transform: capitalize;
   }
 
   .actions {
@@ -18,42 +32,161 @@
 }
 
 .background {
-  padding: 16px;
+  flex: 1;
+  min-height: 0;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: var(--glass-shadow);
 }
 
+// angular-calendar renders its own markup outside this component's
+// encapsulated view, so its structural classes need ::ng-deep. Colors are
+// swapped for the glass tokens; borders are softened everywhere in one pass
+// rather than chasing every individual selector the library defines.
 :host ::ng-deep {
-  .cal-month-view .cal-day-cell.cal-today {
-    background-color: #e3f2fd !important;
+  .cal-month-view,
+  .cal-week-view,
+  .cal-day-view {
+    background: transparent;
+    color: var(--glass-text-primary);
+
+    * {
+      border-color: var(--glass-border) !important;
+    }
   }
 
-  .cal-month-view .cal-day-cell.cal-weekend .cal-day-number {
-    color: #f44336;
+  // Month view
+  .cal-month-view {
+    .cal-header .cal-cell {
+      color: var(--glass-text-secondary);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 8px 0;
+    }
+
+    .cal-day-cell {
+      background: transparent;
+      transition: background-color .2s ease;
+
+      &:hover {
+        background: var(--glass-row-hover);
+      }
+    }
+
+    .cal-day-number {
+      color: var(--glass-text-primary);
+      opacity: 1;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .cal-day-cell.cal-weekend .cal-day-number {
+      color: #DC2626;
+    }
+
+    .cal-day-cell.cal-out-month {
+      background: transparent;
+
+      .cal-day-number {
+        color: var(--glass-text-secondary);
+        opacity: .5;
+      }
+    }
+
+    .cal-day-cell.cal-today {
+      background: rgba(17, 93, 140, .12) !important;
+
+      .cal-day-number {
+        color: #115D8C;
+        font-weight: 800;
+      }
+    }
+
+    .cal-day-cell.cal-open {
+      background: rgba(17, 93, 140, .08) !important;
+      box-shadow: inset 0 0 0 2px rgba(17, 93, 140, .45) !important;
+    }
+
+    .cal-open-day-events {
+      background: var(--glass-bg-strong);
+      border-radius: 14px;
+      margin: 6px;
+      padding: 10px;
+      box-shadow: var(--glass-shadow);
+
+      .cal-event {
+        border-radius: 50%;
+      }
+    }
+
+    .cal-event {
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--glass-bg-strong);
+    }
   }
 
-  .cal-month-view .cal-day-cell.cal-open {
-    background-color: #fff3e0 !important;
-    box-shadow: inset 0 0 0 3px #ff9800 !important;
+  // Week / day views
+  .cal-week-view,
+  .cal-day-view {
+    border-radius: 14px;
+    overflow: hidden;
+
+    .cal-day-headers {
+      background: var(--glass-table-header);
+
+      .cal-header {
+        span {
+          color: var(--glass-text-secondary);
+          font-weight: 700;
+        }
+
+        &.cal-today {
+          background: rgba(17, 93, 140, .12);
+
+          span {
+            color: #115D8C;
+            font-weight: 800;
+          }
+        }
+      }
+    }
+
+    .cal-hour-odd {
+      background: var(--glass-row-hover);
+    }
+
+    .cal-time-label-column .cal-time {
+      color: var(--glass-text-secondary);
+      font-size: 12px;
+    }
+
+    .cal-event {
+      border-radius: 10px !important;
+      border: none !important;
+      box-shadow: 0 6px 16px rgba(5, 20, 35, .2);
+      font-weight: 600;
+      padding: 2px 6px;
+    }
+
+    .cal-current-time-marker {
+      background-color: #DC2626;
+    }
   }
 
-  .cal-month-view .cal-open-day-events {
-    padding: 8px;
-    background: #fafafa;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  .cal-event-title {
+    color: inherit;
   }
 
-  .cal-month-view .cal-day-cell .cal-events {
-    pointer-events: none;
-  }
-
-  .cal-month-view .cal-day-cell .cal-event {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin: 2px;
-    display: inline-block;
-  }
-
-  .cal-event {
-    cursor: pointer;
+  .cal-tooltip-inner {
+    background-color: var(--glass-bg-strong) !important;
+    color: var(--glass-text-primary) !important;
+    border-radius: 10px;
+    box-shadow: var(--glass-shadow);
   }
 }

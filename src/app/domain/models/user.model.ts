@@ -25,8 +25,7 @@ export interface User {
   hasActiveSession?: boolean;
   sessions?: Record<string, SessionData>;
   lastHeartbeat?: any;
-  pendingActivation?: boolean;
-  
+
   // Employee fields
   position?: string;
   department?: string;

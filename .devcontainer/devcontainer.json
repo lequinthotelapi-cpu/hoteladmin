@@ -28,8 +28,8 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "npm install && ./.devcontainer/install-claude.sh",
-  "postStartCommand": "git config --global http.sslVerify false && git config --global user.name 'lequinthotelapi-cpu' && git config --global user.email 'tu_email@ejemplo.com' && ./.devcontainer/install-claude.sh",
+  "postCreateCommand": "npm install && bash ./.devcontainer/install-claude.sh",
+  "postStartCommand": "git config --global http.sslVerify false && git config --global user.name 'lequinthotelapi-cpu' && git config --global user.email 'tu_email@ejemplo.com' && bash ./.devcontainer/install-claude.sh",
   "remoteUser": "root",
   "mounts": [
     "source=${localWorkspaceFolder}/.vscode,target=/workspace/.vscode,type=bind,consistency=cached"

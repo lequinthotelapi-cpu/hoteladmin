@@ -24,10 +24,6 @@ const routes: Routes = [
     loadChildren: () => import('./examples/authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordModule),
   },
   {
-    path: 'coming-soon',
-    loadChildren: () => import('./examples/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
-  },
-  {
     path: '',
     component: LayoutComponent,
     canActivate: [AuthGuard],
@@ -124,58 +120,6 @@ const routes: Routes = [
       {
         path: 'help',
         loadChildren: () => import('./features/private/help/help.module').then(m => m.HelpModule),
-      },
-      {
-        path: 'apps/inbox',
-        loadChildren: () => import('./examples/apps/inbox/inbox.module').then(m => m.InboxModule),
-      },
-      {
-        path: 'apps/calendar',
-        loadChildren: () => import('./examples/apps/calendar/calendar.module').then(m => m.CalendarAppModule),
-      },
-      {
-        path: 'apps/chat',
-        loadChildren: () => import('./examples/apps/chat/chat.module').then(m => m.ChatModule),
-      },
-      {
-        path: 'components',
-        loadChildren: () => import('./examples/components/components.module').then(m => m.ComponentsModule),
-      },
-      {
-        path: 'forms/form-elements',
-        loadChildren: () => import('./examples/forms/form-elements/form-elements.module').then(m => m.FormElementsModule),
-      },
-      {
-        path: 'forms/form-wizard',
-        loadChildren: () => import('./examples/forms/form-wizard/form-wizard.module').then(m => m.FormWizardModule),
-      },
-      {
-        path: 'icons',
-        loadChildren: () => import('./examples/icons/icons.module').then(m => m.IconsModule),
-      },
-      {
-        path: 'page-layouts',
-        loadChildren: () => import('./examples/page-layouts/page-layouts.module').then(m => m.PageLayoutsModule),
-      },
-      {
-        path: 'tables/all-in-one-table',
-        loadChildren: () => import('./examples/tables/all-in-one-table/all-in-one-table.module').then(m => m.AllInOneTableModule),
-      },
-      {
-        path: 'drag-and-drop',
-        loadChildren: () => import('./examples/drag-and-drop/drag-and-drop.module').then(m => m.DragAndDropModule)
-      },
-      {
-        path: 'editor',
-        loadChildren: () => import('./examples/editor/editor.module').then(m => m.EditorModule),
-      },
-      {
-        path: 'blank',
-        loadChildren: () => import('./examples/blank/blank.module').then(m => m.BlankModule),
-      },
-      {
-        path: 'level1/level2/level3/level4/level5',
-        loadChildren: () => import('./examples/level5/level5.module').then(m => m.Level5Module),
       },
     ]
   }

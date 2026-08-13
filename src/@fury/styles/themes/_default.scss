@@ -93,23 +93,3 @@ $footer-elevation: 0 !default;
 
 // List
 @import "../../shared/list/list.component.theme";
-
-// Widgets
-
-// Advanced Pie Chart Widget
-@import "../../../app/features/private/dashboard/widgets/advanced-pie-chart-widget/advanced-pie-chart-widget.component.theme";
-
-// Recent Sales Widget
-@import "../../../app/features/private/dashboard/widgets/recent-sales-widget/recent-sales-widget.component.theme";
-
-// Market Widget
-@import "../../../app/features/private/dashboard/widgets/market-widget/market-widget.component.theme";
-
-// Sales Summary Widget
-@import "../../../app/features/private/dashboard/widgets/sales-summary-widget/sales-summary-widget.component.theme";
-
-// Audience Overview Widget
-@import "../../../app/features/private/dashboard/widgets/audience-overview-widget/audience-overview-widget.component.theme";
-
-// Donut Chart Widget
-@import "../../../app/features/private/dashboard/widgets/donut-chart-widget/donut-chart-widget.component.theme";

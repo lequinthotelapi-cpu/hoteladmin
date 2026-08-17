@@ -1,6 +1,6 @@
 # SPEC-09 — Cargos, pagos y cierre de Guest Account
 
-**Estado:** PENDING
+**Estado:** IN PROGRESS (2026-08-17) — Tasks 09.1-09.3 completadas (3 Functions transaccionales implementadas, 55 tests en verde contra el emulador real incluyendo concurrencia; `GuestAccountService` ya las consume, cubriendo también el camino POS sin tocar `pos.component.ts`). Tasks 09.4/09.5 pendientes de que el usuario despliegue y confirme en producción.
 
 ## Objetivo
 Centralizar `addCharge`, `addPayment` y `closeAccount` de `GuestAccountService` en Cloud Functions transaccionales, cerrando el riesgo de condición de carrera (arrays completos sobrescritos) y el riesgo de seguridad de que hoy cualquier autenticado pueda escribir `balance: 0` directo en Firestore.
@@ -72,24 +72,31 @@ Alto — maneja dinero real y es la base de la facturación (Spec 10).
 - **Objetivo:** no romper la integración POS→Guest Account.
 - **Dependencias:** ninguna.
 - **Validación:** documentado antes de implementar.
-- **Estado:** PENDING
+- **Estado:** COMPLETED (2026-08-17)
+  - **Confirmado contra el código real:** `pos.component.ts:208-213` (flujo "cargar a habitación") llama a `GuestAccountService.addCharge(...)` — el mismo método que usa el diálogo manual de cargos. No hay un camino separado ni una Function/API distinta para POS. Adaptar `addCharge` (Task 09.3) cubre automáticamente el flujo POS sin tocar `pos.component.ts`.
+  - **Hallazgo adicional:** `GuestAccountService.removeCharge` no tiene ningún caller en la UI (código muerto) — no está en el alcance del Spec (no se menciona en "Comportamiento esperado"), así que no se centralizó.
 
 ### Task 09.2 — Implementar `agregarCargoCuenta`, `agregarPagoCuenta`, `cerrarCuenta`
 - **Archivos afectados:** nuevo `functions/src/guest-accounts/`.
 - **Dependencias:** SPEC-03, SPEC-07, Task 09.1.
 - **Validación:** tests en emulador + concurrencia.
-- **Estado:** PENDING
+- **Estado:** COMPLETED (2026-08-17)
+  - Las 3 Functions (`functions/src/guest-accounts/cargos-pagos.ts`) usan `runTransaction` (read-modify-write con reintento automático en conflicto) en vez de `arrayUnion` — evita perder cargos/pagos concurrentes igual que `arrayUnion` lo haría, pero permite calcular `total`/`quantity` del cargo y recalcular subtotal/tax/total/paid/balance en la misma operación atómica. Réplica bit a bit de `GuestAccountService.calculateTotals` (13% IVA vía `calcularTotalesConImpuesto`, SPEC-03).
+  - `agregarPagoCuenta` valida el monto contra el campo `balance` **almacenado** (no recalculado), igual que el código actual.
+  - Códigos de error nuevos: `LH-0303/0304` (validación), `LH-0411..0415` (negocio).
+  - **19 tests en verde contra el emulador real**: 12 comportamiento (sin auth/rol/datos, cuenta inexistente/cerrada, pago excede saldo, cierre con saldo pendiente, cierre ya-cerrada, y 3 casos felices verificando aritmética exacta) + **1 test de concurrencia real** que satisface el criterio de aceptación explícito del Spec: 10 cargos simultáneos a la misma cuenta → ningún cargo se pierde, subtotal final es la suma exacta de los 10. Total `functions/`: 55 tests en verde contra el emulador + 49 offline.
+  - **Bug encontrado y corregido durante esta Task — en el propio test, no en el código:** un test inicial sembraba `total`/`balance` sin cargos reales de respaldo en el array `charges`; como la Function siempre recalcula desde `charges[]` (nunca confía en un total viejo), el test fallaba con una expectativa matemáticamente inconsistente. Corregido sembrando un cargo real. Esto confirma que la Function recalcula correctamente desde la fuente de verdad, tal como se pretendía.
 
 ### Task 09.3 — Adaptar `GuestAccountService` en Angular
 - **Archivos afectados:** `src/app/core/services/guest-account.service.ts`.
 - **Dependencias:** Task 09.2.
 - **Validación:** `ng build`; regresión manual completa (incluye POS).
 - **Riesgos de regresión:** alto.
-- **Estado:** PENDING
+- **Estado:** COMPLETED a nivel de código (2026-08-17) — `addCharge`/`addPayment`/`closeAccount` mantienen su firma pública exacta, ahora llaman a las Functions vía `httpsCallable`. `createAccountFromBooking`, `removeCharge` y `calculateTotals` (privado) no se tocaron — fuera de alcance (el primero ya lo reemplaza `registrarCheckIn` de SPEC-07 para el flujo real de check-in; los otros dos son código muerto/interno sin caller externo). `ng build --configuration production` limpio. Regresión manual (incluyendo POS): **pendiente** (Task 09.4).
 
 ### Task 09.4 — Regresión manual y aprobación del usuario
 - **Dependencias:** Task 09.3.
-- **Estado:** PENDING
+- **Estado:** PENDING — requiere que el usuario despliegue estas 3 Functions y pruebe: agregar cargo manual, agregar cargo vía POS "cargar a habitación", agregar pago, cerrar cuenta.
 
 ### Task 09.5 — Retirar lógica cliente antigua (solo tras VERIFIED)
 - **Dependencias:** Task 09.4 VERIFIED.

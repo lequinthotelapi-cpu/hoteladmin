@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { FirebaseGuestAccountRepository } from '../repositories/guest-account-firebase.repository';
-import { 
-  GuestAccount, 
+import {
+  GuestAccount,
   GuestAccountStatus,
   Charge,
   Payment,
@@ -15,7 +16,10 @@ import { Booking } from '../../domain/models/booking.model';
   providedIn: 'root'
 })
 export class GuestAccountService {
-  constructor(private repository: FirebaseGuestAccountRepository) {}
+  constructor(
+    private repository: FirebaseGuestAccountRepository,
+    private functions: Functions
+  ) {}
 
   getAll(): Observable<GuestAccount[]> {
     return this.repository.getAll();
@@ -83,38 +87,24 @@ export class GuestAccountService {
     return await this.repository.create(account);
   }
 
-  async addCharge(accountId: string, dto: CreateChargeDto, userId: string): Promise<void> {
-    const account = await firstValueFrom(this.repository.getById(accountId));
-
-    if (account.status !== 'open') {
-      throw new Error('No se pueden agregar cargos a una cuenta cerrada');
+  // SPEC-09: delega en la Cloud Function agregarCargoCuenta (transaccional,
+  // evita perder cargos concurrentes). Cubre también el camino POS "cargar a
+  // habitación" (pos.component.ts), que llama a este mismo método. userId ya
+  // no se usa pero se mantiene en la firma.
+  async addCharge(accountId: string, dto: CreateChargeDto, _userId: string): Promise<void> {
+    const agregarCargoCuentaFn = httpsCallable(this.functions, 'agregarCargoCuenta');
+    try {
+      await agregarCargoCuentaFn({
+        accountId,
+        tipo: dto.type,
+        descripcion: dto.description,
+        monto: dto.amount,
+        cantidad: dto.quantity,
+        referencia: dto.reference
+      });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo agregar el cargo');
     }
-
-    const charge: Charge = {
-      accountId,
-      type: dto.type,
-      description: dto.description,
-      amount: dto.amount,
-      quantity: dto.quantity,
-      total: dto.amount * dto.quantity,
-      date: new Date(),
-      createdBy: userId,
-      createdAt: new Date()
-    };
-
-    // Solo agregar reference si existe
-    if (dto.reference) {
-      charge.reference = dto.reference;
-    }
-
-    const updatedCharges = [...account.charges, charge];
-    const totals = this.calculateTotals(updatedCharges, account.payments);
-
-    await this.repository.update(accountId, {
-      charges: updatedCharges,
-      ...totals,
-      updatedBy: userId
-    });
   }
 
   async removeCharge(accountId: string, chargeId: string, userId: string): Promise<void> {
@@ -134,62 +124,30 @@ export class GuestAccountService {
     });
   }
 
-  async addPayment(accountId: string, dto: CreatePaymentDto, userId: string): Promise<void> {
-    const account = await firstValueFrom(this.repository.getById(accountId));
-
-    if (account.status !== 'open') {
-      throw new Error('No se pueden agregar pagos a una cuenta cerrada');
+  // SPEC-09: delega en la Cloud Function agregarPagoCuenta (transaccional).
+  async addPayment(accountId: string, dto: CreatePaymentDto, _userId: string): Promise<void> {
+    const agregarPagoCuentaFn = httpsCallable(this.functions, 'agregarPagoCuenta');
+    try {
+      await agregarPagoCuentaFn({
+        accountId,
+        monto: dto.amount,
+        metodoPago: dto.method,
+        referencia: dto.reference,
+        notas: dto.notes
+      });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo agregar el pago');
     }
-
-    if (dto.amount > account.balance) {
-      throw new Error('El monto del pago excede el saldo pendiente');
-    }
-
-    const payment: Payment = {
-      accountId,
-      method: dto.method,
-      amount: dto.amount,
-      date: new Date(),
-      createdBy: userId,
-      createdAt: new Date()
-    };
-
-    // Solo agregar campos opcionales si existen
-    if (dto.reference) {
-      payment.reference = dto.reference;
-    }
-    if (dto.notes) {
-      payment.notes = dto.notes;
-    }
-
-    const updatedPayments = [...account.payments, payment];
-    const totals = this.calculateTotals(account.charges, updatedPayments);
-
-    await this.repository.update(accountId, {
-      payments: updatedPayments,
-      ...totals,
-      updatedBy: userId
-    });
   }
 
-  async closeAccount(accountId: string, userId: string): Promise<void> {
-    const account = await firstValueFrom(this.repository.getById(accountId));
-
-    if (account.status === 'closed') {
-      throw new Error('La cuenta ya está cerrada');
+  // SPEC-09: delega en la Cloud Function cerrarCuenta.
+  async closeAccount(accountId: string, _userId: string): Promise<void> {
+    const cerrarCuentaFn = httpsCallable(this.functions, 'cerrarCuenta');
+    try {
+      await cerrarCuentaFn({ accountId });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo cerrar la cuenta');
     }
-
-    if (account.balance > 0) {
-      throw new Error('No se puede cerrar una cuenta con saldo pendiente');
-    }
-
-    await this.repository.update(accountId, {
-      status: 'closed',
-      checkOutDate: new Date(),
-      closedAt: new Date(),
-      closedBy: userId,
-      updatedBy: userId
-    });
   }
 
   private calculateTotals(charges: Charge[], payments: Payment[]) {

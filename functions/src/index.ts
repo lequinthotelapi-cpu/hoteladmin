@@ -7,3 +7,4 @@ export { crearReserva } from './bookings/crear-reserva';
 export { confirmarReserva, cancelarReserva } from './bookings/confirmar-cancelar';
 export { registrarCheckIn } from './bookings/checkin';
 export { registrarCheckOut } from './bookings/checkout';
+export { agregarCargoCuenta, agregarPagoCuenta, cerrarCuenta } from './guest-accounts/cargos-pagos';

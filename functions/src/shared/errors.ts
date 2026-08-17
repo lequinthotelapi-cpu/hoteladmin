@@ -36,6 +36,9 @@ export const LH_CODES = {
   BOOKING_NOT_CONFIRMED: 'LH-0408',
   ROOM_NOT_READY_FOR_CHECKIN: 'LH-0409',
 
+  // SPEC-08 — registrarCheckOut
+  BOOKING_NOT_CHECKED_IN: 'LH-0410',
+
   UNKNOWN: 'LH-9999',
 } as const;
 

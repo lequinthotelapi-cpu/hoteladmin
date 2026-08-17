@@ -17,7 +17,7 @@ Una Task pasa a `COMPLETED` solo con evidencia de compilación/tests en verde; p
 | 05 | `crearReserva` centralizada | COMPLETED — verificada en producción real por el usuario | 02, 03, 04 | Alto (flujo crítico de negocio) | [specs/SPEC-05-crear-reserva.md](specs/SPEC-05-crear-reserva.md) |
 | 06 | `confirmarReserva` / `cancelarReserva` | IN PROGRESS (código completo y probado; falta que despliegues y confirmes) | 05 | Medio | [specs/SPEC-06-confirmar-cancelar-reserva.md](specs/SPEC-06-confirmar-cancelar-reserva.md) |
 | 07 | `registrarCheckIn` transaccional | IN PROGRESS (código completo y probado; falta que despliegues y confirmes) | 05, 06 | Alto (crea Guest Account + cambia habitación) | [specs/SPEC-07-checkin.md](specs/SPEC-07-checkin.md) |
-| 08 | `registrarCheckOut` transaccional | PENDING | 07 | Alto | [specs/SPEC-08-checkout.md](specs/SPEC-08-checkout.md) |
+| 08 | `registrarCheckOut` transaccional | IN PROGRESS (código completo y probado; falta que despliegues y confirmes) | 07 | Alto | [specs/SPEC-08-checkout.md](specs/SPEC-08-checkout.md) |
 | 09 | Cargos/pagos/cierre de Guest Account | PENDING | 03, 07 | Alto (dinero real) | [specs/SPEC-09-guest-account-cargos-pagos.md](specs/SPEC-09-guest-account-cargos-pagos.md) |
 | 10 | Emisión de factura centralizada | PENDING | 02, 09 | Medio-alto (impacto fiscal) | [specs/SPEC-10-facturacion.md](specs/SPEC-10-facturacion.md) |
 | 11 | Venta POS transaccional | PENDING | 03 | Alto (stock + caja) | [specs/SPEC-11-pos-venta-transaccional.md](specs/SPEC-11-pos-venta-transaccional.md) |

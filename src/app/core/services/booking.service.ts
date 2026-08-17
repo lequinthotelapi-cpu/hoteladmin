@@ -180,21 +180,17 @@ export class BookingService {
     }
   }
 
-  async checkOut(id: string, userId: string): Promise<void> {
-    const booking = await firstValueFrom(this.repository.getById(id));
-    
-    if (booking.status !== 'checked-in') {
-      throw new Error('Solo se puede hacer check-out a reservas con check-in realizado');
+  // SPEC-08: delega en la Cloud Function registrarCheckOut (transaccional).
+  // Decisión del usuario (Task 08.1): no conectar tarea de housekeeping
+  // automática — se mantiene manual, igual que hoy. userId ya no se usa pero
+  // se mantiene en la firma.
+  async checkOut(id: string, _userId: string): Promise<void> {
+    const registrarCheckOutFn = httpsCallable(this.functions, 'registrarCheckOut');
+    try {
+      await registrarCheckOutFn({ bookingId: id });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo registrar el check-out');
     }
-
-    // Cambiar estado de la habitación a dirty (pendiente de limpieza)
-    await this.roomService.changeRoomStatus(booking.roomId, 'dirty', userId);
-
-    // Cambiar estado de la reserva
-    await this.repository.update(id, { 
-      status: 'checked-out',
-      updatedBy: userId
-    });
   }
 
   // Queries especializadas

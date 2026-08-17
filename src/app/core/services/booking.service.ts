@@ -167,28 +167,17 @@ export class BookingService {
     });
   }
 
-  async checkIn(id: string, userId: string): Promise<void> {
-    const booking = await firstValueFrom(this.repository.getById(id));
-    
-    if (booking.status !== 'confirmed') {
-      throw new Error('Solo se puede hacer check-in a reservas confirmadas');
+  // SPEC-07: delega en la Cloud Function registrarCheckIn, que hace las 3
+  // escrituras (Guest Account, Room, Booking) en una sola transacción — en vez
+  // de 3 escrituras independientes sin transacción como antes. userId ya no
+  // se usa (se deriva de request.auth) pero se mantiene en la firma.
+  async checkIn(id: string, _userId: string): Promise<void> {
+    const registrarCheckInFn = httpsCallable(this.functions, 'registrarCheckIn');
+    try {
+      await registrarCheckInFn({ bookingId: id });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo registrar el check-in');
     }
-
-    // Verificar si ya existe una cuenta para esta reserva
-    const existingAccount = await firstValueFrom(this.guestAccountService.getByBooking(id));
-    if (!existingAccount) {
-      // Crear cuenta de huésped
-      await this.guestAccountService.createAccountFromBooking(booking, userId);
-    }
-
-    // Cambiar estado de la habitación a occupied
-    await this.roomService.changeRoomStatus(booking.roomId, 'occupied', userId);
-
-    // Cambiar estado de la reserva
-    await this.repository.update(id, { 
-      status: 'checked-in',
-      updatedBy: userId
-    });
   }
 
   async checkOut(id: string, userId: string): Promise<void> {

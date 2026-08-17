@@ -11,7 +11,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test": "jest",
-    "test:concurrency": "jest -c jest.emulator.config.js"
+    "test:concurrency": "jest -c jest.emulator.config.js --runInBand"
   },
   "engines": {
     "node": "20"

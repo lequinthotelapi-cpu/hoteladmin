@@ -410,17 +410,22 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 
 ## Roles requeridos — resumen
 
-| Function | receptionist | manager | admin | superadmin | housekeeper | guest |
-|---|---|---|---|---|---|---|
-| `forceLogoutUser` | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| `crearReserva` / `confirmarReserva` / `cancelarReserva` / `registrarCheckIn` / `registrarCheckOut` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `agregarCargoCuenta` / `agregarPagoCuenta` / `cerrarCuenta` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `emitirFactura` / `cancelarFactura` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `registrarVentaPOS` | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Function | receptionist | manager | admin | superadmin | housekeeper | guest | **ai-agent** |
+|---|---|---|---|---|---|---|---|
+| `forceLogoutUser` | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `crearReserva` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | **✅** |
+| `confirmarReserva` / `cancelarReserva` / `registrarCheckIn` / `registrarCheckOut` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `agregarCargoCuenta` / `agregarPagoCuenta` / `cerrarCuenta` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `emitirFactura` / `cancelarFactura` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `registrarVentaPOS` | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+**`ai-agent` (SPEC-14):** rol dedicado exclusivo de `functions/` — deliberadamente **no existe** en el `UserRole` de Angular ni en `rolePermissions`, para que no pueda aparecer por accidente en ningún selector de rol de la UI de administración de usuarios. El agente nunca inicia sesión en la SPA; obtiene un ID token autenticándose directo contra Firebase Auth (email+password de una cuenta de servicio dedicada) desde n8n. Habilitado hoy **únicamente** para `crearReserva` — lista blanca explícita, se amplía función por función según se vaya necesitando, nunca por defecto.
+
+**Trazabilidad (Task 14.3):** `crearReserva` agrega un campo `createdByRole` (además de `createdBy`, que ya existía) al documento de la reserva — permite distinguir reservas creadas por el agente (`createdByRole: 'ai-agent'`) de las creadas por un humano, sin depender de conocer el UID exacto de la cuenta de servicio. Por ahora solo se agregó a `crearReserva` (la única Function que el agente puede invocar) — si se amplía la lista blanca a otras Functions, extender el mismo patrón ahí.
 
 ---
 
 ## Pendiente / fuera de alcance de este documento
 
 - Las Functions de `products`/inventario (crear/editar producto, movimientos de stock) **no existen todavía** — ver SPEC-12 Task 12.3, necesitan su propia Spec nueva antes de poder documentarse aquí.
-- El rol dedicado para el agente IA de n8n (SPEC-14) todavía no existe — cuando se cree, este documento debe actualizarse con una columna nueva en la tabla de roles.
+- **La cuenta de servicio real del agente (usuario Firebase Auth + documento `users/{uid}` con `role: 'ai-agent'`) todavía no se creó** — el código ya la soporta (`requireRole` acepta `'ai-agent'` en `crearReserva`), pero provisionar la cuenta real en el proyecto de producción y conectarla a un flujo de n8n real queda pendiente (no hay entorno de n8n disponible en esta sesión para probarlo end-to-end — ver SPEC-14 Task 14.4).

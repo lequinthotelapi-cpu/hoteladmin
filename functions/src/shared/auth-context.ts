@@ -3,10 +3,27 @@ import { HttpsError, CallableRequest } from 'firebase-functions/v2/https';
 import { LH_CODES, withLhCode } from './errors';
 
 /**
- * Debe coincidir exactamente con src/app/core/models/user-role.enum.ts (Angular).
- * Si ese enum cambia, actualizar aquí también.
+ * Los primeros 6 valores deben coincidir exactamente con
+ * src/app/core/models/user-role.enum.ts (Angular). Si ese enum cambia,
+ * actualizar aquí también.
+ *
+ * 'ai-agent' (SPEC-14) es deliberadamente EXCLUSIVO de functions/ — no existe
+ * en el UserRole de Angular ni en rolePermissions. El agente nunca inicia
+ * sesión en la SPA (autentica vía email+password directo con Firebase Auth
+ * para obtener un ID token, invocado desde n8n), así que no necesita
+ * aparecer en ningún selector de rol de la UI de administración de usuarios
+ * — agregarlo al enum de Angular hubiera arriesgado que apareciera ahí por
+ * accidente. Cada Function decide explícitamente si acepta 'ai-agent' en su
+ * propia lista de roles permitidos (lista blanca, no heredado por defecto).
  */
-export type UserRole = 'superadmin' | 'admin' | 'manager' | 'receptionist' | 'housekeeper' | 'guest';
+export type UserRole =
+  | 'superadmin'
+  | 'admin'
+  | 'manager'
+  | 'receptionist'
+  | 'housekeeper'
+  | 'guest'
+  | 'ai-agent';
 
 export interface AuthContext {
   uid: string;

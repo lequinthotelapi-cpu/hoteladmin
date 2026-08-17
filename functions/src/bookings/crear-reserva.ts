@@ -61,7 +61,10 @@ function parseDate(value: string | number, field: string): Date {
 }
 
 export const crearReserva = onCall(async (request) => {
-  const caller = await requireRole(request.auth, ['receptionist', 'manager', 'admin', 'superadmin']);
+  // SPEC-14: 'ai-agent' habilitado explícitamente aquí — es la única Function
+  // a la que el agente conversacional puede llamar por ahora ("una función a
+  // la vez", ver SPEC-14). No se agrega por defecto a ninguna otra Function.
+  const caller = await requireRole(request.auth, ['receptionist', 'manager', 'admin', 'superadmin', 'ai-agent']);
 
   const input = request.data as CrearReservaInput;
 
@@ -169,6 +172,11 @@ export const crearReserva = onCall(async (request) => {
       notes: input.notes ?? '',
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       createdBy: caller.uid,
+      // SPEC-14: trazabilidad — permite distinguir reservas creadas por el
+      // agente conversacional de las creadas por un humano. Campo nuevo y
+      // aditivo (no reemplaza `source`, que es el canal de la reserva
+      // direct/website/booking.com/etc., un concepto de negocio distinto).
+      createdByRole: caller.role,
     });
 
     return { bookingId: bookingRef.id, bookingNumber, totalPrice, nights };

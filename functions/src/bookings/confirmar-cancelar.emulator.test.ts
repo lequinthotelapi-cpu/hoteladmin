@@ -38,6 +38,13 @@ describe('confirmarReserva — emulador real', () => {
     });
   });
 
+  it('SPEC-14: rechaza al rol ai-agent — solo tiene lista blanca para crearReserva, no para esta Function', async () => {
+    await admin.firestore().collection('users').doc('caller-agent').set({ role: 'ai-agent' });
+    await expect(
+      callRun(confirmarReserva, { data: { bookingId: 'x' }, auth: { uid: 'caller-agent' } })
+    ).rejects.toMatchObject({ code: 'permission-denied' });
+  });
+
   it('rechaza sin rol suficiente', async () => {
     await admin.firestore().collection('users').doc('caller-hk').set({ role: 'housekeeper' });
     await expect(

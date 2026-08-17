@@ -23,7 +23,7 @@ Una Task pasa a `COMPLETED` solo con evidencia de compilación/tests en verde; p
 | 11 | Venta POS transaccional | IN PROGRESS (código completo y probado; hallazgo de doble IVA a decidir; falta que despliegues y confirmes) | 03 | Alto (stock + caja) | [specs/SPEC-11-pos-venta-transaccional.md](specs/SPEC-11-pos-venta-transaccional.md) |
 | 12 | Endurecimiento progresivo de `firestore.rules` | IN PROGRESS (bookings/guestAccounts/sales/invoices endurecidos y probados; products/inventario necesita su propia Spec nueva) | Cada spec funcional ya VERIFIED (el usuario decidió no esperar) | Alto si se hace fuera de orden — bajo si se hace después de validar | [specs/SPEC-12-endurecer-firestore-rules.md](specs/SPEC-12-endurecer-firestore-rules.md) |
 | 13 | Contratos compartidos (Flutter/n8n) | COMPLETED — `docs/architecture/CONTRATOS-API.md` | 05–11 | Bajo (documentación + tipos) | [specs/SPEC-13-contratos-compartidos.md](specs/SPEC-13-contratos-compartidos.md) |
-| 14 | Integración n8n — agente conversacional | PENDING | 13 | Bajo para la app existente; alto en superficie de ataque si se hace mal | [specs/SPEC-14-integracion-n8n-agente-ia.md](specs/SPEC-14-integracion-n8n-agente-ia.md) |
+| 14 | Integración n8n — agente conversacional | IN PROGRESS (rol ai-agent diseñado y habilitado en crearReserva; falta provisionar la cuenta real y probar con n8n) | 13 | Bajo para la app existente; alto en superficie de ataque si se hace mal | [specs/SPEC-14-integracion-n8n-agente-ia.md](specs/SPEC-14-integracion-n8n-agente-ia.md) |
 
 ## Notas sobre el orden
 

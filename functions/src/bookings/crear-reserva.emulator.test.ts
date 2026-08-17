@@ -196,6 +196,24 @@ describe('crearReserva — emulador real', () => {
     expect(data.specialRequests).toBe('');
     expect(data.notes).toBe('');
     expect(data.createdBy).toBe('caller-7');
+    expect(data.createdByRole).toBe('receptionist');
+  });
+
+  it('SPEC-14: el rol ai-agent puede crear reservas (única Function habilitada para el agente por ahora), con trazabilidad', async () => {
+    await seedUser('caller-agent', 'ai-agent');
+    await seedRoom('room-agent-1', { capacity: 3 });
+    await seedGuest('guest-agent-1');
+
+    const result = await callRun({
+      data: baseInput({ roomId: 'room-agent-1', guestId: 'guest-agent-1' }),
+      auth: { uid: 'caller-agent' },
+    });
+
+    expect(result.status).toBe('pending');
+
+    const doc = await admin.firestore().collection('bookings').doc(result.bookingId).get();
+    expect(doc.data()?.createdBy).toBe('caller-agent');
+    expect(doc.data()?.createdByRole).toBe('ai-agent');
   });
 
   it('roles con acceso a /bookings (manager, admin, superadmin) también pueden crear reservas', async () => {

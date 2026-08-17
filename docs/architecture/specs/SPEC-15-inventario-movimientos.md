@@ -104,7 +104,7 @@ Medio — el flujo es menos usado que reservas/POS (según lo observado: sin otr
 
 ### Task 15.3 — Regresión manual y aprobación del usuario
 - **Dependencias:** Task 15.2.
-- **Estado:** PENDING — requiere que el usuario despliegue `registrarMovimientoInventario` y pruebe: registrar una entrada, una salida y un ajuste desde la UI de inventario.
+- **Estado:** IN_PROGRESS — `registrarMovimientoInventario` ya desplegada a producción (`lequinthotel-ca6ef`, 2026-08-17). Falta que el usuario pruebe desde la UI (local con `ng serve` contra Firebase real, ya que la rama `vercel` todavía no tiene estos cambios — ver nota de despliegue frontend pendiente): registrar una entrada, una salida y un ajuste desde `/inventory`.
 
 ### Task 15.4 — Retirar lógica cliente antigua (solo tras VERIFIED)
 - **Dependencias:** Task 15.3 VERIFIED.

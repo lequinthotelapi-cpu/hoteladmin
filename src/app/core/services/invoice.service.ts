@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { FirebaseInvoiceRepository } from '../../infrastructure/repositories/invoice-firebase.repository';
-import { Invoice, CreateInvoiceDto, InvoiceItem } from '../../domain/models/invoice.model';
+import { Invoice, CreateInvoiceDto } from '../../domain/models/invoice.model';
 import { GuestAccountService } from './guest-account.service';
 
 @Injectable({
@@ -11,7 +12,8 @@ import { GuestAccountService } from './guest-account.service';
 export class InvoiceService {
   constructor(
     private repository: FirebaseInvoiceRepository,
-    private guestAccountService: GuestAccountService
+    private guestAccountService: GuestAccountService,
+    private functions: Functions
   ) {}
 
   getAll(): Observable<Invoice[]> {
@@ -73,6 +75,10 @@ export class InvoiceService {
     return await this.repository.create(invoice);
   }
 
+  // SPEC-10: delega en la Cloud Function emitirFactura (transaccional, usa el
+  // contador atómico de SPEC-02 para invoiceNumber). Solo soporta cuentas de
+  // huésped hoy — no existe ningún flujo real de facturación POS en la UI
+  // actual, así que no se inventó esa lógica (ver facturacion.ts).
   async createInvoiceFromGuestAccount(
     accountId: string,
     clientData: {
@@ -82,65 +88,30 @@ export class InvoiceService {
       clientEmail?: string;
       clientPhone?: string;
     },
-    userId: string,
-    userName: string
+    _userId: string,
+    _userName: string
   ): Promise<string> {
-    const account = await firstValueFrom(this.guestAccountService.getById(accountId));
-    
-    if (!account) {
-      throw new Error('Cuenta de huésped no encontrada');
+    const emitirFacturaFn = httpsCallable(this.functions, 'emitirFactura');
+    try {
+      const response: any = await emitirFacturaFn({
+        referenceId: accountId,
+        tipo: 'guest_account',
+        ...clientData
+      });
+      return response.data.invoiceId;
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo generar la factura');
     }
-
-    if (account.status !== 'closed') {
-      throw new Error('Solo se pueden facturar cuentas cerradas');
-    }
-
-    if (account.balance !== 0) {
-      throw new Error('La cuenta debe tener balance cero para facturar');
-    }
-
-    // Convertir cargos a items de factura
-    const items: InvoiceItem[] = account.charges.map(charge => ({
-      description: charge.description,
-      quantity: charge.quantity,
-      unitPrice: charge.amount,
-      subtotal: charge.total
-    }));
-
-    const dto: CreateInvoiceDto = {
-      type: 'guest_account',
-      referenceId: accountId,
-      clientName: clientData.clientName,
-      clientTaxId: clientData.clientTaxId,
-      clientAddress: clientData.clientAddress,
-      clientEmail: clientData.clientEmail,
-      clientPhone: clientData.clientPhone,
-      items,
-      subtotal: account.subtotal,
-      tax: account.tax,
-      total: account.total
-    };
-
-    return await this.createInvoice(dto, userId, userName);
   }
 
-  async cancelInvoice(id: string, reason: string, userId: string): Promise<void> {
-    const invoice = await firstValueFrom(this.repository.getById(id));
-    
-    if (!invoice) {
-      throw new Error('Factura no encontrada');
+  // SPEC-10: delega en la Cloud Function cancelarFactura.
+  async cancelInvoice(id: string, reason: string, _userId: string): Promise<void> {
+    const cancelarFacturaFn = httpsCallable(this.functions, 'cancelarFactura');
+    try {
+      await cancelarFacturaFn({ invoiceId: id, motivo: reason });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo cancelar la factura');
     }
-
-    if (invoice.status === 'cancelled') {
-      throw new Error('La factura ya está cancelada');
-    }
-
-    await this.repository.update(id, {
-      status: 'cancelled',
-      cancelledAt: new Date(),
-      cancelledBy: userId,
-      cancelReason: reason
-    });
   }
 
   private async generateInvoiceNumber(): Promise<string> {

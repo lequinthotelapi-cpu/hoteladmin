@@ -64,6 +64,9 @@ export const LH_CODES = {
   PRODUCT_INACTIVE: 'LH-0424',
   INSUFFICIENT_STOCK: 'LH-0425',
 
+  // SPEC-15 — registrarMovimientoInventario
+  VALIDATION_INVALID_MOVEMENT: 'LH-0307',
+
   UNKNOWN: 'LH-9999',
 } as const;
 

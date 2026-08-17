@@ -10,3 +10,4 @@ export { registrarCheckOut } from './bookings/checkout';
 export { agregarCargoCuenta, agregarPagoCuenta, cerrarCuenta } from './guest-accounts/cargos-pagos';
 export { emitirFactura, cancelarFactura } from './invoices/facturacion';
 export { registrarVentaPOS } from './pos/registrar-venta';
+export { registrarMovimientoInventario } from './inventory/registrar-movimiento';

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { InventoryMovementRepository } from '../repositories/inventory-movement.repository';
-import { ProductService } from './product.service';
 import { InventoryMovement, CreateInventoryMovementData } from '../../domain/models/inventory-movement.model';
 
 @Injectable()
 export class InventoryMovementService {
   constructor(
     private movementRepository: InventoryMovementRepository,
-    private productService: ProductService
+    private functions: Functions
   ) {}
 
   getAll(): Observable<InventoryMovement[]> {
@@ -23,51 +23,26 @@ export class InventoryMovementService {
     return this.movementRepository.getByProduct(productId);
   }
 
+  // SPEC-15: delega en la Cloud Function registrarMovimientoInventario
+  // (transaccional — valida y actualiza el stock del producto atómicamente
+  // junto con el registro del movimiento, en vez de dos escrituras sueltas).
   async create(data: CreateInventoryMovementData): Promise<string> {
-    const product = await firstValueFrom(this.productService.getById(data.productId));
-    if (!product) {
-      throw new Error('Producto no encontrado');
+    const registrarMovimientoFn = httpsCallable(this.functions, 'registrarMovimientoInventario');
+    try {
+      const response: any = await registrarMovimientoFn({
+        productId: data.productId,
+        type: data.type,
+        reason: data.reason,
+        quantity: data.quantity,
+        unitCost: data.unitCost,
+        supplierId: data.supplierId,
+        invoiceNumber: data.invoiceNumber,
+        notes: data.notes
+      });
+      return response.data.movementId;
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo registrar el movimiento de inventario');
     }
-
-    let quantityChange = 0;
-    if (data.type === 'entry') {
-      quantityChange = data.quantity;
-    } else if (data.type === 'exit') {
-      quantityChange = -data.quantity;
-      if (product.currentStock < data.quantity) {
-        throw new Error('Stock insuficiente para realizar la salida');
-      }
-    } else if (data.type === 'adjustment') {
-      quantityChange = data.quantity;
-    }
-
-    const previousStock = product.currentStock;
-    const newStock = previousStock + quantityChange;
-
-    if (newStock < 0) {
-      throw new Error('El stock no puede ser negativo');
-    }
-
-    const totalCost = data.unitCost ? data.unitCost * Math.abs(data.quantity) : undefined;
-
-    const movementData = {
-      ...data,
-      productName: product.name,
-      productCode: product.code,
-      previousStock,
-      newStock,
-      totalCost,
-      createdByName: 'Usuario'
-    };
-
-    const movementId = await this.movementRepository.create(movementData);
-
-    await this.productService.update(data.productId, {
-      currentStock: newStock,
-      updatedBy: data.createdBy
-    });
-
-    return movementId;
   }
 
   async delete(id: string): Promise<void> {

@@ -408,6 +408,56 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 
 ---
 
+## Inventario (`functions/src/inventory/`)
+
+### `registrarMovimientoInventario`
+**Rol requerido:** `admin`, `superadmin` — únicos roles con la ruta `/inventory` en `DEFAULT_ROLE_PERMISSIONS`.
+**Archivo:** `registrar-movimiento.ts` (SPEC-15). Reemplaza `InventoryMovementService.create()`, que leía el stock del producto fuera de una transacción y lo actualizaba en una escritura separada del registro del movimiento (mismo patrón de riesgo que tenían `crearReserva` y `registrarVentaPOS` antes de sus respectivas Specs).
+
+**Input:**
+```ts
+{
+  productId: string;
+  type: 'entry' | 'exit' | 'adjustment';
+  reason: string;
+  quantity: number;          // siempre > 0, para los tres tipos
+  unitCost?: number;
+  supplierId?: string;
+  invoiceNumber?: string;
+  notes?: string;
+  createdByName?: string;    // si se omite, se usa el uid
+}
+```
+
+**Output:**
+```ts
+{ movementId: string; newStock: number }
+```
+
+`adjustment` usa la misma fórmula que `entry` (suma `quantity`) — el formulario Angular real nunca permitió un ajuste negativo (`Validators.min(1)`), así que no hay forma de restar stock vía `adjustment`, solo vía `exit`.
+
+**Errores:**
+| `lhCode` | `code` | Situación |
+|---|---|---|
+| `LH-0307` | `invalid-argument` | Faltan `productId`/`type`/`reason`/`quantity`, `quantity <= 0`, o `type` no es `entry`/`exit`/`adjustment` |
+| `LH-0423` | `not-found` | El producto no existe |
+| `LH-0424` | `failed-precondition` | El producto no está `isActive` |
+| `LH-0425` | `failed-precondition` | `type: 'exit'` con stock insuficiente — la transacción se descarta, el stock no cambia |
+
+**Ejemplo — entrada de stock:**
+```json
+{
+  "productId": "prod-happy-1",
+  "type": "entry",
+  "reason": "compra",
+  "quantity": 3,
+  "unitCost": 10,
+  "invoiceNumber": "F-001"
+}
+```
+
+---
+
 ## Roles requeridos — resumen
 
 | Function | receptionist | manager | admin | superadmin | housekeeper | guest | **ai-agent** |
@@ -418,6 +468,7 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 | `agregarCargoCuenta` / `agregarPagoCuenta` / `cerrarCuenta` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | `emitirFactura` / `cancelarFactura` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | `registrarVentaPOS` | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `registrarMovimientoInventario` | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 
 **`ai-agent` (SPEC-14):** rol dedicado exclusivo de `functions/` — deliberadamente **no existe** en el `UserRole` de Angular ni en `rolePermissions`, para que no pueda aparecer por accidente en ningún selector de rol de la UI de administración de usuarios. El agente nunca inicia sesión en la SPA; obtiene un ID token autenticándose directo contra Firebase Auth (email+password de una cuenta de servicio dedicada) desde n8n. Habilitado hoy **únicamente** para `crearReserva` — lista blanca explícita, se amplía función por función según se vaya necesitando, nunca por defecto.
 
@@ -427,5 +478,5 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 
 ## Pendiente / fuera de alcance de este documento
 
-- Las Functions de `products`/inventario (crear/editar producto, movimientos de stock) **no existen todavía** — ver SPEC-12 Task 12.3, necesitan su propia Spec nueva antes de poder documentarse aquí.
+- **Movimientos de inventario** (`registrarMovimientoInventario`) ya centralizado — SPEC-15. El **CRUD de productos** (crear/editar/eliminar catálogo) sigue sin centralizar — se evaluó y se decidió dejarlo fuera del alcance de SPEC-15 (sin bug de concurrencia real detectado, solo un TOCTOU de bajo riesgo en la validación de código único).
 - **La cuenta de servicio real del agente (usuario Firebase Auth + documento `users/{uid}` con `role: 'ai-agent'`) todavía no se creó** — el código ya la soporta (`requireRole` acepta `'ai-agent'` en `crearReserva`), pero provisionar la cuenta real en el proyecto de producción y conectarla a un flujo de n8n real queda pendiente (no hay entorno de n8n disponible en esta sesión para probarlo end-to-end — ver SPEC-14 Task 14.4).

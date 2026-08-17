@@ -14,7 +14,7 @@ Una Task pasa a `COMPLETED` solo con evidencia de compilación/tests en verde; p
 | 02 | Contador atómico centralizado | COMPLETED | 00 | Bajo (aditivo, con fallback) | [specs/SPEC-02-contador-atomico.md](specs/SPEC-02-contador-atomico.md) |
 | 03 | Cálculo centralizado de pricing/IVA | COMPLETED | 00 | Bajo-medio (redondeos) | [specs/SPEC-03-pricing-iva-centralizado.md](specs/SPEC-03-pricing-iva-centralizado.md) |
 | 04 | Validación server-side de disponibilidad | COMPLETED (04.3 recomendación pendiente de confirmar, no bloqueante) | 00 | Medio | [specs/SPEC-04-validar-disponibilidad.md](specs/SPEC-04-validar-disponibilidad.md) |
-| 05 | `crearReserva` centralizada | IN PROGRESS (código completo, login verificado en vivo; falta que confirmes el flujo de creación de reserva tú mismo) | 02, 03, 04 | Alto (flujo crítico de negocio) | [specs/SPEC-05-crear-reserva.md](specs/SPEC-05-crear-reserva.md) |
+| 05 | `crearReserva` centralizada | COMPLETED — verificada en producción real por el usuario | 02, 03, 04 | Alto (flujo crítico de negocio) | [specs/SPEC-05-crear-reserva.md](specs/SPEC-05-crear-reserva.md) |
 | 06 | `confirmarReserva` / `cancelarReserva` | PENDING | 05 | Medio | [specs/SPEC-06-confirmar-cancelar-reserva.md](specs/SPEC-06-confirmar-cancelar-reserva.md) |
 | 07 | `registrarCheckIn` transaccional | PENDING | 05, 06 | Alto (crea Guest Account + cambia habitación) | [specs/SPEC-07-checkin.md](specs/SPEC-07-checkin.md) |
 | 08 | `registrarCheckOut` transaccional | PENDING | 07 | Alto | [specs/SPEC-08-checkout.md](specs/SPEC-08-checkout.md) |

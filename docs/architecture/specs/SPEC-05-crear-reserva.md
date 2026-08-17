@@ -1,6 +1,6 @@
 # SPEC-05 — `crearReserva` centralizada
 
-**Estado:** IN PROGRESS (2026-08-17) — Tasks 05.1/05.2/05.3 completadas a nivel de código (`crearReserva` en `functions/` con 17 tests en verde; `BookingService.createBooking` ya la consume). Durante la verificación de 05.3 se encontró y corrigió un bug crítico preexistente en `AuthService` que habría roto el login de todos los usuarios (ver addendum en SPEC-01). El login quedó verificado en vivo contra el emulador; el envío real del formulario de reserva vía UI **no se pudo verificar** por una limitación de recursos del sandbox (Chromium crasheaba en `/bookings`), no por un error detectado en la app. Tasks 05.4 (regresión manual + aprobación del usuario) y 05.5 (retirar código viejo) siguen pendientes — 05.4 requiere que pruebes el flujo tú mismo. Ver hallazgos completos abajo.
+**Estado:** COMPLETED (2026-08-17) — las 5 Tasks completadas. `crearReserva` desplegada y probada en producción real (`lequinthotel-ca6ef`) por el usuario, quien confirmó explícitamente que crear una reserva desde la UI funciona correctamente. Durante el camino se encontró y corrigió un bug crítico preexistente en `AuthService` que habría roto el login de todos los usuarios bajo la regla de SPEC-01 (ver addendum en `SPEC-01-cerrar-escalacion-privilegios.md`). `generateBookingNumber` (código muerto tras esta Spec) fue retirado. Pendiente real: `firestore.rules` de SPEC-01 sigue sin desplegar (bloqueado por Task 01.2, auditoría de Flutter — no relacionado con esta Spec). Ver hallazgos completos abajo.
 **Naturaleza:** esta es la Spec "ejemplo" mencionada en el objetivo del proyecto (`crearReserva(datos)`) y la plantilla de convenciones para el resto de Functions de negocio (Specs 06-11).
 
 ## Objetivo
@@ -136,7 +136,7 @@ Alto — es el flujo de negocio más usado de la aplicación. Mitigación: no re
 - **Dependencias:** Task 05.3.
 - **Validación:** aprobación explícita del usuario.
 - **Riesgos de regresión:** N/A (es la validación misma).
-- **Estado:** PENDING — bloqueada por la limitación de recursos del sandbox descrita en Task 05.3. Requiere que el usuario pruebe el flujo de creación de reserva manualmente (contra el emulador local en su propio entorno, o contra un proyecto de staging) antes de aprobar. También sigue bloqueada por Task 01.2 (auditoría de Flutter) para el despliegue final de `firestore.rules`.
+- **Estado:** VERIFIED (2026-08-17) — el usuario probó el flujo real: `ng serve` local (`environment.useEmulators: false`) contra el proyecto real `lequinthotel-ca6ef`, con `crearReserva` ya desplegada en Functions (deploy manual del usuario, ver historial de la conversación). Login con usuario real, creación de reserva desde la UI de `features/private/bookings` → **éxito confirmado explícitamente por el usuario** ("Funciono la reserva"). Nota: esta prueba fue contra Firebase real, no contra staging (no existe un proyecto de staging separado) — la reserva de prueba quedó persistida en datos reales. `firestore.rules` sigue sin desplegar (bloqueado por Task 01.2, sin relación con `crearReserva`, que usa Admin SDK y no depende de las rules del cliente).
 
 ### Task 05.5 — Retirar la lógica cliente antigua (solo tras VERIFIED)
 - **Objetivo:** limpiar el código de validación/cálculo que ya no se usa en `BookingService`, una vez confirmado que la Function es la única vía.
@@ -144,4 +144,8 @@ Alto — es el flujo de negocio más usado de la aplicación. Mitigación: no re
 - **Dependencias:** Task 05.4 en estado VERIFIED.
 - **Validación:** `ng build`, `ng test`, regresión manual final.
 - **Riesgos de regresión:** bajo si se hace después de VERIFIED; **no ejecutar esta Task antes** de esa confirmación (principio de compatibilidad del usuario: no retirar código viejo hasta demostrar que el nuevo funciona).
-- **Estado:** PENDING
+- **Estado:** COMPLETED (2026-08-17)
+  - Se verificó que `checkRoomAvailability` y `calculateNights` **siguen en uso real** por `updateBooking` (cambio de fechas de una reserva existente, todavía client-side, fuera del alcance de SPEC-05) y `searchAvailableRooms` (búsqueda de disponibilidad, de solo lectura) — no se tocaron.
+  - `generateBookingNumber()` (el generador no atómico de `bookingNumber`, reemplazado por `getNextSequence` en SPEC-02/`crearReserva`) ya no tenía ningún caller — confirmado con `grep` en todo `src/`. Se eliminó.
+  - `booking-firebase.repository.ts`'s `getOverlappingBookings` (el método de overlap client-side) **sigue en uso** — lo consume indirectamente `checkRoomAvailability`, que a su vez sigue viva por `updateBooking`/`searchAvailableRooms`. No se tocó.
+  - `ng build --configuration production` limpio tras el cambio. `ng test` no se corrió (gap preexistente ya documentado en SPEC-00 — `ng test` está roto en este proyecto por causas ajenas a este backlog).

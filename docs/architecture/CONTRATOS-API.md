@@ -354,7 +354,7 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 
 ### `registrarVentaPOS`
 **Rol requerido:** `receptionist`, `admin`, `superadmin` — **no `manager`** (a diferencia de las demás Functions de este documento; `manager` no tiene acceso a la ruta `/pos`).
-**Archivo:** `registrar-venta.ts` (SPEC-11). Unifica venta directa y "cargar a habitación" (antes dos caminos separados en Angular). IVA **19%**, no 13% (específico de POS).
+**Archivo:** `registrar-venta.ts` (SPEC-11). Unifica venta directa y "cargar a habitación" (antes dos caminos separados en Angular). Venta **directa**: IVA 19% (específico de POS, crea su propio documento `sales`). Carga a **habitación**: IVA 13% — el mismo que aplica la cuenta a cualquier otro cargo del folio (corregido 2026-08-17, ver nota abajo), no el 19% de POS.
 
 **Input:**
 ```ts
@@ -384,7 +384,7 @@ Todos los errores de negocio son un `HttpsError` con un `code` gRPC estándar (`
 | `LH-0422` | `failed-precondition` | `tipoVenta: 'directa'` sin caja abierta del caller |
 | (códigos de `agregarCargoCuenta`) | — | Si `tipoVenta: 'habitacion'`, también puede fallar con `LH-0411`/`LH-0412` (cuenta inexistente/cerrada) |
 
-**Hallazgo importante, no corregido (ver SPEC-11):** una venta cargada a habitación sufre doble IVA hoy (19% al calcular el total de la venta, +13% adicional al recalcular los totales de la cuenta) — bug preexistente en el código actual, replicado fielmente, pendiente de que el usuario decida si amerita corrección.
+**Nota histórica (corregida):** una versión anterior de esta Function aplicaba 19% de IVA también al calcular el monto cargado a la habitación, y la cuenta volvía a aplicar 13% al recalcular — doble impuesto. Corregido con confirmación del usuario: para `tipoVenta: 'habitacion'`, `total` refleja el subtotal + 13% (no 19%+13%). Ver addendum en `SPEC-11-pos-venta-transaccional.md`.
 
 **Ejemplo — venta directa** (de `registrar-venta.emulator.test.ts`):
 ```json

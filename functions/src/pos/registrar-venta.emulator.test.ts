@@ -189,24 +189,22 @@ describe('registrarVentaPOS — emulador real', () => {
       auth: { uid: 'caller-8' },
     });
 
+    // CORREGIDO (2026-08-17, con confirmación del usuario) — ya no se aplica
+    // el 19% de POS a una carga a habitación. Se pasa el subtotal SIN gravar
+    // como cargo, y la cuenta le aplica su propio 13% de IVA (igual que
+    // cualquier otro cargo del folio) — subtotal 60 → tax 7.8 → total 67.8.
+    // Antes: 60 → 19% → 71.4 → +13% otra vez → 80.682 (doble impuesto, bug
+    // preexistente ya corregido).
     expect(result.saleId).toBeNull();
-    expect(result.total).toBeCloseTo(71.4, 5); // subtotal 60, IVA 19% = 11.4, total 71.4
+    expect(result.total).toBeCloseTo(67.8, 5);
 
-    // NOTA — doble IVA, replicado fielmente del comportamiento actual: el
-    // "total" de la venta POS (71.4) ya incluye 19% de IVA, pero se guarda
-    // como `charge.total` de un único cargo; aplicarCargoCuenta/
-    // calcularTotalesCuenta vuelve a aplicar 13% de IVA sobre ESE monto al
-    // recalcular los totales de la cuenta (71.4 * 1.13 = 80.682). Esto
-    // también le pasa hoy al código real (pos.component.ts pasa el total ya
-    // gravado con 19% como `amount` a addCharge, que igualmente vuelve a
-    // aplicar 13%) — no se "corrigió" sin permiso, se documenta el hallazgo.
     const account = await admin.firestore().collection('guestAccounts').doc('account-pos-1').get();
     const data = account.data()!;
     expect(data.charges).toHaveLength(1);
     expect(data.charges[0].type).toBe('pos');
     expect(data.charges[0].description).toContain('Cerveza x3');
-    expect(data.charges[0].total).toBeCloseTo(71.4, 5);
-    expect(data.balance).toBeCloseTo(80.682, 5);
+    expect(data.charges[0].total).toBe(60); // subtotal sin gravar, no el total con IVA
+    expect(data.balance).toBeCloseTo(67.8, 5);
 
     const product = await admin.firestore().collection('products').doc('prod-happy-2').get();
     expect(product.data()?.currentStock).toBe(7);

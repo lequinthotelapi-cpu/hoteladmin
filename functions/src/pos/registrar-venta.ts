@@ -24,9 +24,26 @@ import { aplicarCargoCuenta } from '../guest-accounts/cargos-pagos';
  * comportamiento real (una carga a habitación que hoy se acepta
  * silenciosamente incluso sin stock suficiente, ahora se rechaza).
  *
- * IVA 19% (no 13%): confirmado en `pos.component.ts:160`
+ * IVA 19% (no 13%) para venta directa: confirmado en `pos.component.ts:160`
  * (`this.subtotal * 0.19`), distinto del 13% usado en reservas/guest
- * accounts — específico de ventas POS, no un error de tipeo.
+ * accounts — específico de ventas POS, no un error de tipeo. Se aplica SOLO
+ * a `tipoVenta: 'directa'` (que crea su propio documento `sales`, un
+ * universo contable separado).
+ *
+ * CORRECCIÓN 2026-08-17 (con confirmación del usuario) — doble IVA en
+ * "cargar a habitación": la versión original de esta Function aplicaba 19%
+ * de IVA al total de la venta y ESE monto ya gravado se pasaba como
+ * `monto` a `aplicarCargoCuenta`, que a su vez vuelve a aplicar el 13% de
+ * IVA de la cuenta sobre el subtotal de TODOS sus cargos (incluido este,
+ * ya gravado) — doble impuesto (bug preexistente, replicado fielmente al
+ * principio, ver commit de SPEC-11). Corregido: para `tipoVenta:
+ * 'habitacion'` ya NO se aplica el 19% de POS en absoluto — se pasa el
+ * subtotal SIN gravar a `aplicarCargoCuenta`, y es la propia cuenta la que
+ * aplica su 13% de IVA de forma uniforme, igual que cualquier otro cargo
+ * del folio (alojamiento, servicios, etc.). Es la decisión correcta porque
+ * una carga a habitación nunca crea un documento `sales` propio — se
+ * convierte en un cargo más de la cuenta, así que debe seguir la
+ * convención fiscal de la cuenta, no la de POS.
  *
  * "reutiliza agregarCargoCuenta (Spec 09) internamente": Firestore no
  * permite invocar otra Cloud Function dentro de una transacción de forma
@@ -142,6 +159,8 @@ export const registrarVentaPOS = onCall(async (request) => {
       });
     }
 
+    // 19% solo aplica a venta directa (su propio documento `sales`). Para
+    // "habitación" no se usa este total gravado — ver corrección arriba.
     const { tax, total } = calcularTotalesConImpuesto(subtotal, POS_TAX_RATE);
 
     let cashRegisterId: string | undefined;
@@ -167,14 +186,20 @@ export const registrarVentaPOS = onCall(async (request) => {
     // aplicarCargoCuenta hace su propia lectura (guestAccounts) + escritura;
     // debe llamarse aquí (antes del decremento de stock) para que su lectura
     // no quede después de ninguna escritura previa en la transacción.
+    // monto: subtotal (SIN el 19% de POS) — la cuenta aplica su propio 13%
+    // al recalcular, ver corrección de doble IVA arriba.
+    let habitacionTotal = 0;
     if (tipoVenta === 'habitacion') {
       const description = `POS: ${saleItems.map((i) => `${i.productName} x${i.quantity}`).join(', ')}`;
       await aplicarCargoCuenta(
         tx,
         guestAccountId,
-        { tipo: 'pos', descripcion: description, monto: total, cantidad: 1 },
+        { tipo: 'pos', descripcion: description, monto: subtotal, cantidad: 1 },
         caller.uid
       );
+      // Total informativo devuelto al caller: subtotal + el 13% que la
+      // cuenta le aplicará (misma tasa default de calcularTotalesConImpuesto).
+      habitacionTotal = calcularTotalesConImpuesto(subtotal).total;
     }
 
     // === ESCRITURAS ===
@@ -216,6 +241,6 @@ export const registrarVentaPOS = onCall(async (request) => {
       return { saleId: saleRef.id, total };
     }
 
-    return { saleId: null, total };
+    return { saleId: null, total: habitacionTotal };
   });
 });

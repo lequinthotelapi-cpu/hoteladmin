@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { BookingRepository } from '../../domain/repositories/booking.repository';
 import { FirebaseBookingRepository } from '../repositories/booking-firebase.repository';
-import { 
-  Booking, 
-  BookingStatus, 
-  CreateBookingDto, 
+import {
+  Booking,
+  BookingStatus,
+  CreateBookingDto,
   UpdateBookingDto,
   BookingSearchCriteria,
   AvailableRoom
@@ -16,6 +17,16 @@ import { GuestService } from './guest.service';
 import { GuestAccountService } from './guest-account.service';
 import { NotificationService } from './notification.service';
 import { UserService } from './user.service';
+
+// Réplica del contrato de salida de la Cloud Function `crearReserva`
+// (functions/src/bookings/crear-reserva.ts, SPEC-05).
+interface CrearReservaResult {
+  bookingId: string;
+  bookingNumber: string;
+  totalPrice: number;
+  nights: number;
+  status: 'pending';
+}
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +38,8 @@ export class BookingService {
     private guestService: GuestService,
     private guestAccountService: GuestAccountService,
     private notificationService: NotificationService,
-    private userService: UserService
+    private userService: UserService,
+    private functions: Functions
   ) {}
 
   // CRUD básico
@@ -39,72 +51,53 @@ export class BookingService {
     return this.repository.getById(id);
   }
 
-  async createBooking(dto: CreateBookingDto, userId: string): Promise<string> {
-    // Validar disponibilidad
-    const isAvailable = await this.checkRoomAvailability(
-      dto.roomId,
-      dto.checkInDate,
-      dto.checkOutDate
+  /**
+   * SPEC-05: delega en la Cloud Function `crearReserva` en vez de validar/calcular/
+   * escribir en el cliente (evita la condición de carrera que existía al no estar
+   * en una transacción). `userId` ya no se usa — el creador de la reserva se deriva
+   * server-side de `request.auth`, pero se mantiene el parámetro para no romper la
+   * firma pública que consumen los componentes existentes.
+   */
+  async createBooking(dto: CreateBookingDto, _userId: string): Promise<string> {
+    const crearReservaFn = httpsCallable<Record<string, unknown>, CrearReservaResult>(
+      this.functions,
+      'crearReserva'
     );
 
-    if (!isAvailable) {
-      throw new Error('La habitación no está disponible para las fechas seleccionadas');
+    let result: CrearReservaResult;
+    try {
+      const response = await crearReservaFn({
+        roomId: dto.roomId,
+        guestId: dto.guestId,
+        checkInDate: dto.checkInDate.toISOString(),
+        checkOutDate: dto.checkOutDate.toISOString(),
+        adults: dto.adults,
+        children: dto.children,
+        source: dto.source,
+        specialRequests: dto.specialRequests,
+        notes: dto.notes
+      });
+      result = response.data;
+    } catch (error: any) {
+      // El mensaje de la Function ya está alineado en significado con los mensajes
+      // que este método lanzaba antes (ver crear-reserva.ts) — se propaga tal cual.
+      throw new Error(error.message || 'No se pudo crear la reserva');
     }
 
-    // Obtener información de habitación y huésped
-    const room = await firstValueFrom(this.roomService.getRoomById(dto.roomId));
+    // Notificar a recepcionistas sobre nueva reserva (se queda en Angular, no se
+    // migró a la Function — ver "Fuera de alcance" en crear-reserva.ts).
     const guest = await firstValueFrom(this.guestService.getById(dto.guestId));
-
-    // Validar capacidad
-    const totalGuests = dto.adults + dto.children;
-    if (totalGuests > room.capacity) {
-      throw new Error(`La habitación solo tiene capacidad para ${room.capacity} personas`);
-    }
-
-    // Calcular noches y precio
-    const nights = this.calculateNights(dto.checkInDate, dto.checkOutDate);
-    const totalPrice = room.basePrice * nights;
-
-    // Generar número de reserva
-    const bookingNumber = await this.generateBookingNumber();
-
-    const booking: Booking = {
-      bookingNumber,
-      guestId: dto.guestId,
-      guestName: `${guest.firstName} ${guest.lastName}`,
-      guestEmail: guest.email,
-      guestPhone: guest.phone,
-      roomId: dto.roomId,
-      roomNumber: room.roomNumber,
-      roomType: room.roomType,
-      checkInDate: dto.checkInDate,
-      checkOutDate: dto.checkOutDate,
-      nights,
-      adults: dto.adults,
-      children: dto.children,
-      basePrice: room.basePrice,
-      totalPrice,
-      status: 'pending',
-      source: dto.source,
-      specialRequests: dto.specialRequests,
-      notes: dto.notes,
-      createdAt: new Date(),
-      createdBy: userId
-    };
-
-    const bookingId = await this.repository.create(booking);
-    
-    // Notificar a recepcionistas sobre nueva reserva
+    const guestName = `${guest.firstName} ${guest.lastName}`;
     const receptionists = await firstValueFrom(this.userService.getUsersByRole('receptionist'));
     for (const receptionist of receptionists) {
       await this.notificationService.notifyNewBooking(
         receptionist.uid,
-        bookingNumber,
-        booking.guestName
+        result.bookingNumber,
+        guestName
       );
     }
-    
-    return bookingId;
+
+    return result.bookingId;
   }
 
   async updateBooking(id: string, dto: UpdateBookingDto, userId: string): Promise<void> {

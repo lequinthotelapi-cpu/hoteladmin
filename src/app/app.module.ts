@@ -12,11 +12,11 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarConfig } from '@angular/mater
 import { environment } from '../environments/environment';
 // 🔥 AngularFire imports
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
+import { provideFirestore, getFirestore, connectFirestoreEmulator } from '@angular/fire/firestore';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { provideStorage, getStorage } from '@angular/fire/storage';
-import { provideFunctions, getFunctions } from '@angular/fire/functions';
+import { provideFunctions, getFunctions, connectFunctionsEmulator } from '@angular/fire/functions';
 
 // Core Module
 import { CoreModule } from './core/core.module';
@@ -52,11 +52,29 @@ import { RolePermissionFirebaseRepository } from './infrastructure/repositories/
 
     // 🔥 Firebase config
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
+    provideAuth(() => {
+      const auth = getAuth();
+      if (environment.useEmulators) {
+        connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      }
+      return auth;
+    }),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      if (environment.useEmulators) {
+        connectFirestoreEmulator(firestore, 'localhost', 8080);
+      }
+      return firestore;
+    }),
     provideMessaging(() => getMessaging()),
     provideStorage(() => getStorage()),
-    provideFunctions(() => getFunctions())
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    })
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],

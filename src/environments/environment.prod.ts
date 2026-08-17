@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  useEmulators: false,
   backend: '', // Put your backend here
   firebaseConfig: {
     apiKey: "AIzaSyCxR8K4O1hlF7QvOkXlbjwferyO66ovaFw",

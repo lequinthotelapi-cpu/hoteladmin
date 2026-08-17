@@ -5,6 +5,10 @@
 
 export const environment = {
   production: false,
+  // SPEC-05: usar los emuladores locales de Firebase (Firestore/Functions/Auth) en
+  // vez del proyecto real lequinthotel-ca6ef. Debe quedar en `false` salvo cuando se
+  // esté probando manualmente contra `firebase emulators:start`.
+  useEmulators: false,
   backend: 'http://localhost:4200', // Put your backend here
   firebaseConfig: {
     apiKey: "AIzaSyCxR8K4O1hlF7QvOkXlbjwferyO66ovaFw",

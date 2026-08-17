@@ -12,7 +12,7 @@ import {
   Firestore,
   doc,
   getDoc,
-  setDoc,
+  updateDoc,
   runTransaction,
   serverTimestamp,
   deleteField
@@ -108,20 +108,22 @@ export class AuthService {
         const newCount = realCount + 1;
         const userRole = data['role'] || 'guest';
 
-        tx.set(
-          userRef,
-          { 
-            ...sessionUpdates,
-            activeSessionsCount: newCount,
-            hasActiveSession: true,
-            [`sessions.${this.sessionId}`]: {
-              createdAt: serverTimestamp(),
-              lastHeartbeat: serverTimestamp(),
-              role: userRole
-            }
-          },
-          { merge: true }
-        );
+        // updateDoc (no setDoc+merge) — necesario para que las claves con punto
+        // ("sessions.{id}") se interpreten como ruta anidada dentro del mapa
+        // `sessions` en vez de como el nombre literal de un campo nuevo (bug
+        // detectado durante SPEC-05: setDoc(...,{merge:true}) con clave punteada
+        // crea un campo top-level llamado literalmente "sessions.abc", no un
+        // mapa anidado — updateDoc/tx.update() sí lo interpretan correctamente).
+        tx.update(userRef, {
+          ...sessionUpdates,
+          activeSessionsCount: newCount,
+          hasActiveSession: true,
+          [`sessions.${this.sessionId}`]: {
+            createdAt: serverTimestamp(),
+            lastHeartbeat: serverTimestamp(),
+            role: userRole
+          }
+        });
       });
       
       this.startHeartbeat(uid);
@@ -165,15 +167,11 @@ export class AuthService {
           const active = data?.['activeSessionsCount'] || 0;
           const newCount = Math.max(active - 1, 0);
           
-          tx.set(
-            userRef,
-            { 
-              activeSessionsCount: newCount,
-              hasActiveSession: newCount > 0,
-              [`sessions.${sessionId}`]: deleteField()
-            },
-            { merge: true }
-          );
+          tx.update(userRef, {
+            activeSessionsCount: newCount,
+            hasActiveSession: newCount > 0,
+            [`sessions.${sessionId}`]: deleteField()
+          });
         });
       } catch (error) {
         console.error('Error al limpiar sesión:', error);
@@ -222,23 +220,20 @@ export class AuthService {
       }
       
       // También eliminar los campos duplicados de lastHeartbeat si existen
+      // (residuo del bug de setDoc+merge con clave punteada — ver signIn arriba)
       for (const key of Object.keys(data)) {
         if (key.startsWith('sessions.') && key.includes('.lastHeartbeat')) {
           updates[key] = deleteField();
         }
       }
-      
-      await setDoc(userRef, updates, { merge: true });
+
+      await updateDoc(userRef, updates);
     } else {
       // Si no hay sesiones, solo resetear los contadores
-      await setDoc(
-        userRef,
-        {
-          activeSessionsCount: 0,
-          hasActiveSession: false
-        },
-        { merge: true }
-      );
+      await updateDoc(userRef, {
+        activeSessionsCount: 0,
+        hasActiveSession: false
+      });
     }
   }
 
@@ -276,15 +271,11 @@ export class AuthService {
         const active = snap.data()?.['activeSessionsCount'] || 0;
         const newCount = Math.max(active - inactiveCount, 0);
         
-        tx.set(
-          userRef,
-          {
-            ...updates,
-            activeSessionsCount: newCount,
-            hasActiveSession: newCount > 0
-          },
-          { merge: true }
-        );
+        tx.update(userRef, {
+          ...updates,
+          activeSessionsCount: newCount,
+          hasActiveSession: newCount > 0
+        });
       });
     }
   }
@@ -315,7 +306,7 @@ export class AuthService {
         // Si el usuario existe pero no tiene maxSessions, agregarlo
         const userData = userSnap.data();
         if (!userData['maxSessions']) {
-          await setDoc(userRef, { maxSessions: 1 }, { merge: true });
+          await updateDoc(userRef, { maxSessions: 1 });
         }
       }
     } catch (error) {
@@ -335,15 +326,9 @@ export class AuthService {
       if (this.sessionId) {
         const userRef = doc(this.firestore, `users/${uid}`);
         try {
-          await setDoc(
-            userRef,
-            {
-              [`sessions.${this.sessionId}`]: {
-                lastHeartbeat: serverTimestamp()
-              }
-            },
-            { merge: true, mergeFields: [`sessions.${this.sessionId}.lastHeartbeat`] }
-          );
+          await updateDoc(userRef, {
+            [`sessions.${this.sessionId}.lastHeartbeat`]: serverTimestamp()
+          });
         } catch (error) {
           console.error('Error enviando heartbeat:', error);
         }
@@ -373,7 +358,7 @@ export class AuthService {
       try {
         const updates: any = {};
         updates[`sessions.${this.sessionId}`] = deleteField();
-        setDoc(userRef, updates, { merge: true });
+        updateDoc(userRef, updates);
       } catch (error) {
         console.error('Error limpiando sesión:', error);
       }
@@ -411,7 +396,7 @@ export class AuthService {
     }
     
     if (Object.keys(updates).length > 0) {
-      await setDoc(userRef, updates, { merge: true });
+      await updateDoc(userRef, updates);
     }
   }
 }

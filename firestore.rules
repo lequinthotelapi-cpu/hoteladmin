@@ -82,20 +82,26 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
     
-    // Reglas para reservas
+    // SPEC-12: reservas — escritura centralizada por completo en Cloud
+    // Functions (crearReserva, confirmarReserva, cancelarReserva,
+    // registrarCheckIn, registrarCheckOut — Specs 05-08). Confirmado contra
+    // el código real que updateBooking/deleteBooking/markAsNoShow no tienen
+    // ningún caller en la UI (código muerto) — no queda ningún camino
+    // legítimo de escritura directa de cliente. Las Functions usan el Admin
+    // SDK, que no está sujeto a estas reglas.
     match /bookings/{bookingId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if isAdmin();
+      allow create, update, delete: if false;
     }
-    
-    // Reglas para cuentas de huéspedes
+
+    // SPEC-12: cuentas de huésped — escritura centralizada por completo en
+    // Cloud Functions (agregarCargoCuenta, agregarPagoCuenta, cerrarCuenta —
+    // Spec 09; la creación ahora la hace registrarCheckIn — Spec 07).
+    // Confirmado que GuestAccountService.createAccountFromBooking/
+    // removeCharge y el delete del repositorio no tienen ningún caller real.
     match /guestAccounts/{accountId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if isAdmin();
+      allow create, update, delete: if false;
     }
     
     // Reglas para movimientos de inventario
@@ -130,19 +136,25 @@ service cloud.firestore {
       allow delete: if isAuthenticated();
     }
     
-    // Reglas para ventas
+    // SPEC-12: ventas — creación centralizada por completo en
+    // registrarVentaPOS (Spec 11). No se encontró ningún otro caller de
+    // creación/edición directa de sales en la UI. `delete` se deja como
+    // estaba (isAdmin) — no forma parte de ninguna Spec, sin evidencia de
+    // que sea código muerto o vivo, no se tocó.
     match /sales/{saleId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow create, update: if false;
       allow delete: if isAdmin();
     }
-    
-    // Reglas para facturas
+
+    // SPEC-12: facturas — emisión/cancelación centralizadas por completo en
+    // emitirFactura/cancelarFactura (Spec 10). El método genérico
+    // InvoiceService.createInvoice no tiene ningún caller real (código
+    // muerto) — no queda ningún camino legítimo de escritura directa.
+    // `delete` se deja como estaba (isAdmin) — fuera de alcance de la Spec.
     match /invoices/{invoiceId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow create, update: if false;
       allow delete: if isAdmin();
     }
     

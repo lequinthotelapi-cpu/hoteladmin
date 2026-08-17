@@ -1,0 +1,12 @@
+{
+  "name": "firestore-rules-tests",
+  "private": true,
+  "description": "Pruebas de firestore.rules contra el emulador de Firestore. No forma parte del build de Angular ni de functions/ — es un proyecto Node aislado. Ver docs/architecture/specs/SPEC-01-cerrar-escalacion-privilegios.md.",
+  "scripts": {
+    "test": "node --test rules.test.js"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "firebase": "^10.14.1"
+  }
+}

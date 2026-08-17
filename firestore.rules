@@ -9,15 +9,38 @@ service cloud.firestore {
     
     // Función helper para verificar roles de admin
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
     }
-    
+
+    // SPEC-01: campos de sesión que AuthService escribe en el propio users/{uid}
+    // durante login/logout/heartbeat (ver core/services/auth.service.ts).
+    // No incluye role/active/activeUntil/maxSessions/salary/document/emergencyContact
+    // ni ningún otro campo sensible.
+    function isSelfSessionUpdate() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      let allowedFields = ['sessions', 'activeSessionsCount', 'hasActiveSession', 'fcmToken'];
+      return affectedKeys.hasOnly(allowedFields);
+    }
+
+    // SPEC-01: auto-reparación histórica de maxSessions ausente
+    // (ver AuthService.ensureUserDocument) — solo permite fijarlo en 1,
+    // nunca a otro valor, así que no sirve para escalar el límite de sesiones.
+    function isSelfMaxSessionsHeal() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(['maxSessions']) && request.resource.data.maxSessions == 1;
+    }
+
+    function isSelfUpdate(userId) {
+      return isAuthenticated() && request.auth.uid == userId &&
+             (isSelfSessionUpdate() || isSelfMaxSessionsHeal());
+    }
+
     // Reglas para usuarios
     match /users/{userId} {
       allow read: if isAuthenticated();
       allow create: if isAdmin();
-      allow update: if isAdmin() || request.auth.uid == userId;
+      allow update: if isAdmin() || isSelfUpdate(userId);
       allow delete: if isAdmin();
     }
     

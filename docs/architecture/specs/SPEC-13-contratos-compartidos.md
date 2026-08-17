@@ -1,6 +1,6 @@
 # SPEC-13 — Contratos compartidos (Flutter/n8n)
 
-**Estado:** PENDING
+**Estado:** COMPLETED (2026-08-17) — `docs/architecture/CONTRATOS-API.md` documenta las 12 Functions construidas en SPEC-00/05-11, cada contrato verificado contra los tests reales que pasan contra el emulador (no contra la intención de diseño). El usuario decidió avanzar sin esperar que todas las Specs 05-11 estén VERIFIED (solo 05 lo está) — mismo criterio que en SPEC-12.
 
 ## Objetivo
 Documentar formalmente el contrato (entrada/salida/errores) de cada Cloud Function de negocio construida en las Specs 01-11, para que Flutter y n8n puedan integrarse sin necesidad de leer el código TypeScript de Functions ni adivinar comportamiento.
@@ -60,9 +60,9 @@ Ninguno (documentación).
 ### Task 13.1 — Decidir alcance: Markdown curado vs. paquete de tipos compartido
 - **Dependencias:** ninguna.
 - **Validación:** decisión del usuario.
-- **Estado:** PENDING · requiere decisión del usuario.
+- **Estado:** DECIDED (2026-08-17) — Markdown curado a mano. El usuario descartó invertir en un paquete de tipos TypeScript compartido, dado que Flutter/n8n no lo consumirían directamente de todos modos.
 
 ### Task 13.2 — Documentar contrato de cada Function ya VERIFIED
 - **Dependencias:** Task 13.1; Specs 05-11 en VERIFIED (al menos las que se quieran exponer primero).
 - **Validación:** contrato verificado contra un test real, no contra la intención de diseño.
-- **Estado:** PENDING
+- **Estado:** COMPLETED (2026-08-17) — se documentaron las 12 Functions existentes (`forceLogoutUser` + las 11 de Specs 05-11), no solo las VERIFIED — el usuario priorizó avanzar (mismo criterio ya usado en SPEC-12). Cada contrato incluye: rol requerido, input, output, tabla de errores (`lhCode`+`code`+situación) y un ejemplo de payload extraído literalmente de un test que pasa contra el emulador real, no inventado. Incluye una tabla resumen de roles por Function y una sección explícita de lo que queda fuera de alcance (Functions de `products`/inventario, que todavía no existen — ver SPEC-12 Task 12.3).

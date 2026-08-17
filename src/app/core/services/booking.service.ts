@@ -138,25 +138,26 @@ export class BookingService {
     return await this.repository.delete(id);
   }
 
-  // Cambios de estado
-  async confirmBooking(id: string, userId: string): Promise<void> {
-    await this.repository.update(id, { 
-      status: 'confirmed',
-      updatedBy: userId
-    });
+  // Cambios de estado — SPEC-06: delegan en Functions (confirmarReserva/cancelarReserva)
+  // en vez de escribir Firestore directo. userId ya no se usa (se deriva de
+  // request.auth server-side) pero se mantiene el parámetro para no romper la
+  // firma pública que consumen los componentes existentes.
+  async confirmBooking(id: string, _userId: string): Promise<void> {
+    const confirmarReservaFn = httpsCallable(this.functions, 'confirmarReserva');
+    try {
+      await confirmarReservaFn({ bookingId: id });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo confirmar la reserva');
+    }
   }
 
-  async cancelBooking(id: string, userId: string): Promise<void> {
-    const booking = await firstValueFrom(this.repository.getById(id));
-    
-    if (booking.status === 'checked-in') {
-      throw new Error('No se puede cancelar una reserva con check-in realizado');
+  async cancelBooking(id: string, _userId: string): Promise<void> {
+    const cancelarReservaFn = httpsCallable(this.functions, 'cancelarReserva');
+    try {
+      await cancelarReservaFn({ bookingId: id });
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo cancelar la reserva');
     }
-
-    await this.repository.update(id, { 
-      status: 'cancelled',
-      updatedBy: userId
-    });
   }
 
   async markAsNoShow(id: string, userId: string): Promise<void> {

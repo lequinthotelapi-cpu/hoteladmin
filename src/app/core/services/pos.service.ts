@@ -1,85 +1,46 @@
 import { Injectable } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
-import { Observable, firstValueFrom } from 'rxjs';
-import { Sale, CreateSaleData, SaleItem } from '../../domain/models/sale.model';
-import { SaleRepository } from '../../domain/repositories/sale.repository';
+import { Observable } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
+import { Sale, CreateSaleData } from '../../domain/models/sale.model';
 import { FirebaseSaleRepository } from '../../infrastructure/repositories/sale-firebase.repository';
-import { ProductService } from './product.service';
-import { CashRegisterService } from './cash-register.service';
+
+export interface CreateSaleResult {
+  saleId: string | null;
+  total: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class POSService {
-  
+
   constructor(
     private saleRepo: FirebaseSaleRepository,
-    private productService: ProductService,
-    private cashRegisterService: CashRegisterService
+    private functions: Functions
   ) {}
 
-  async createSale(data: CreateSaleData): Promise<Sale> {
-    console.log('POSService.createSale - Inicio:', data);
-    
-    // 1. Validar stock de cada producto
-    for (const item of data.items) {
-      const product = await firstValueFrom(this.productService.getById(item.productId));
-      if (!product) {
-        throw new Error(`Producto ${item.productName} no encontrado`);
-      }
-      if (!product.isActive) {
-        throw new Error(`Producto ${item.productName} no está activo`);
-      }
-      if (product.currentStock < item.quantity) {
-        throw new Error(`Stock insuficiente de ${product.name}. Disponible: ${product.currentStock}`);
-      }
+  // SPEC-11: delega en la Cloud Function registrarVentaPOS (transaccional —
+  // valida y descuenta stock atómicamente, todo o nada). Unifica venta
+  // directa y "cargar a habitación" (antes esta última no pasaba por
+  // POSService en absoluto, ver pos.component.ts). tipoVenta/guestAccountId
+  // son nuevos parámetros opcionales; sin ellos, se comporta como venta
+  // directa (compatibilidad con cualquier otro caller futuro).
+  async createSale(
+    data: CreateSaleData & { tipoVenta?: 'directa' | 'habitacion'; guestAccountId?: string }
+  ): Promise<CreateSaleResult> {
+    const registrarVentaPOSFn = httpsCallable(this.functions, 'registrarVentaPOS');
+    try {
+      const response: any = await registrarVentaPOSFn({
+        items: data.items.map(item => ({ productId: item.productId, quantity: item.quantity })),
+        paymentMethod: data.paymentMethod,
+        tipoVenta: data.tipoVenta || 'directa',
+        guestAccountId: data.guestAccountId,
+        createdByName: data.createdByName
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.message || 'No se pudo registrar la venta');
     }
-
-    // 2. Obtener caja abierta
-    const openCashRegister = await this.cashRegisterService.getOpenCashRegister(data.createdBy);
-    if (!openCashRegister) {
-      throw new Error('Debes tener una caja abierta para registrar ventas');
-    }
-    const cashRegisterId = openCashRegister.id;
-
-    // 3. Crear la venta
-    const sale: any = {
-      ...data,
-      cashRegisterId,
-      createdAt: Timestamp.now()
-    };
-
-    console.log('Creando venta:', sale);
-    const saleId = await this.saleRepo.create(sale);
-    const createdSale = { ...sale, id: saleId } as Sale;
-    console.log('Venta creada:', saleId);
-
-    // 4. Descontar inventario
-    for (const item of data.items) {
-      console.log('Ajustando stock:', item.productId, -item.quantity);
-      await this.productService.adjustStock(
-        item.productId,
-        -item.quantity,
-        data.createdBy,
-        `Venta #${createdSale.id}`
-      );
-    }
-
-    // 5. Registrar en caja
-    console.log('Registrando transacción en caja');
-    await this.cashRegisterService.addTransaction({
-      cashRegisterId,
-      type: 'sale',
-      amount: data.total,
-      paymentMethod: data.paymentMethod,
-      description: `Venta #${createdSale.id}`,
-      reference: createdSale.id,
-      createdBy: data.createdBy,
-      createdByName: data.createdByName
-    });
-
-    console.log('POSService.createSale - Completado');
-    return createdSale;
   }
 
   getAll(): Observable<Sale[]> {

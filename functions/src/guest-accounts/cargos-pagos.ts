@@ -32,7 +32,7 @@ import { calcularTotalesConImpuesto } from '../shared/pricing';
  * centralizó.
  */
 
-function calcularTotalesCuenta(charges: Array<{ total: number }>, payments: Array<{ amount: number }>) {
+export function calcularTotalesCuenta(charges: Array<{ total: number }>, payments: Array<{ amount: number }>) {
   const subtotal = charges.reduce((sum, c) => sum + c.total, 0);
   const { tax, total } = calcularTotalesConImpuesto(subtotal);
   const paid = payments.reduce((sum, p) => sum + p.amount, 0);
@@ -42,6 +42,71 @@ function calcularTotalesCuenta(charges: Array<{ total: number }>, payments: Arra
 }
 
 const ALLOWED_ROLES = ['receptionist', 'manager', 'admin', 'superadmin'] as const;
+
+export interface CargoInput {
+  tipo: string;
+  descripcion: string;
+  monto: number;
+  cantidad: number;
+  referencia?: string;
+}
+
+/**
+ * Lógica central de "agregar cargo", extraída para que SPEC-11
+ * (`registrarVentaPOS`, tipoVenta 'habitacion') pueda reutilizarla dentro de
+ * su propia transacción (leyendo/escribiendo la cuenta junto con el stock de
+ * productos), tal como pide el Spec ("reutiliza agregarCargoCuenta
+ * internamente") — Firestore no permite invocar OTRA Cloud Function desde
+ * dentro de una transacción de forma atómica, así que la reutilización real
+ * es a nivel de esta función compartida, no de la Function pública.
+ */
+export async function aplicarCargoCuenta(
+  tx: admin.firestore.Transaction,
+  accountId: string,
+  cargo: CargoInput,
+  callerUid: string
+) {
+  const ref = admin.firestore().collection('guestAccounts').doc(accountId);
+  const snap = await tx.get(ref);
+  if (!snap.exists) {
+    throw new HttpsError('not-found', 'La cuenta no existe', withLhCode(LH_CODES.ACCOUNT_NOT_FOUND));
+  }
+  const account = snap.data()!;
+
+  if (account.status !== 'open') {
+    throw new HttpsError(
+      'failed-precondition',
+      'No se pueden agregar cargos a una cuenta cerrada',
+      withLhCode(LH_CODES.ACCOUNT_NOT_OPEN)
+    );
+  }
+
+  const charge = {
+    accountId,
+    type: cargo.tipo,
+    description: cargo.descripcion,
+    amount: cargo.monto,
+    quantity: cargo.cantidad,
+    total: cargo.monto * cargo.cantidad,
+    // new Date(), no serverTimestamp(): no soportado dentro de un array (ver SPEC-07).
+    date: new Date(),
+    createdBy: callerUid,
+    createdAt: new Date(),
+    ...(cargo.referencia ? { reference: cargo.referencia } : {}),
+  };
+
+  const updatedCharges = [...(account.charges || []), charge];
+  const totales = calcularTotalesCuenta(updatedCharges, account.payments || []);
+
+  tx.update(ref, {
+    charges: updatedCharges,
+    ...totales,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedBy: callerUid,
+  });
+
+  return totales;
+}
 
 export const agregarCargoCuenta = onCall(async (request) => {
   const caller = await requireRole(request.auth, [...ALLOWED_ROLES]);
@@ -56,45 +121,7 @@ export const agregarCargoCuenta = onCall(async (request) => {
   }
 
   return admin.firestore().runTransaction(async (tx) => {
-    const ref = admin.firestore().collection('guestAccounts').doc(accountId);
-    const snap = await tx.get(ref);
-    if (!snap.exists) {
-      throw new HttpsError('not-found', 'La cuenta no existe', withLhCode(LH_CODES.ACCOUNT_NOT_FOUND));
-    }
-    const account = snap.data()!;
-
-    if (account.status !== 'open') {
-      throw new HttpsError(
-        'failed-precondition',
-        'No se pueden agregar cargos a una cuenta cerrada',
-        withLhCode(LH_CODES.ACCOUNT_NOT_OPEN)
-      );
-    }
-
-    const charge = {
-      accountId,
-      type: tipo,
-      description: descripcion,
-      amount: monto,
-      quantity: cantidad,
-      total: monto * cantidad,
-      // new Date(), no serverTimestamp(): no soportado dentro de un array (ver SPEC-07).
-      date: new Date(),
-      createdBy: caller.uid,
-      createdAt: new Date(),
-      ...(referencia ? { reference: referencia } : {}),
-    };
-
-    const updatedCharges = [...(account.charges || []), charge];
-    const totales = calcularTotalesCuenta(updatedCharges, account.payments || []);
-
-    tx.update(ref, {
-      charges: updatedCharges,
-      ...totales,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedBy: caller.uid,
-    });
-
+    const totales = await aplicarCargoCuenta(tx, accountId, { tipo, descripcion, monto, cantidad, referencia }, caller.uid);
     return { accountId, ...totales };
   });
 });

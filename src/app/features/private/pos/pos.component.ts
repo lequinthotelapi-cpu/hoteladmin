@@ -187,41 +187,25 @@ export class PosComponent implements OnInit, OnDestroy {
     this.processing = true;
 
     try {
-      if (this.saleType === 'direct') {
-        // Venta directa normal
-        await this.posService.createSale({
-          items: this.cart,
-          subtotal: this.subtotal,
-          tax: this.tax,
-          total: this.total,
-          paymentMethod: this.selectedPaymentMethod,
-          createdBy: this.currentUserId,
-          createdByName: this.currentUserName
-        });
-        this.alertService.success('Venta registrada exitosamente');
-      } else {
-        // Cargar a habitación
-        const description = this.cart.map(item => 
-          `${item.productName} x${item.quantity}`
-        ).join(', ');
+      // SPEC-11: ambos tipos de venta pasan ahora por la misma Function
+      // transaccional (registrarVentaPOS vía POSService.createSale) — antes
+      // "cargar a habitación" era código separado acá mismo, sin transacción
+      // ni validación de stock.
+      await this.posService.createSale({
+        items: this.cart,
+        subtotal: this.subtotal,
+        tax: this.tax,
+        total: this.total,
+        paymentMethod: this.selectedPaymentMethod,
+        createdBy: this.currentUserId,
+        createdByName: this.currentUserName,
+        tipoVenta: this.saleType === 'direct' ? 'directa' : 'habitacion',
+        guestAccountId: this.saleType === 'room' ? this.selectedAccountId : undefined
+      });
 
-        await this.guestAccountService.addCharge(this.selectedAccountId, {
-          type: 'pos',
-          description: `POS: ${description}`,
-          amount: this.total,
-          quantity: 1
-        }, this.currentUserId);
-
-        // Reducir stock de productos
-        for (const item of this.cart) {
-          const product = this.products.find(p => p.id === item.productId);
-          if (product) {
-            await this.productService.updateStock(item.productId, product.currentStock - item.quantity, this.currentUserId);
-          }
-        }
-
-        this.alertService.success('Cargo agregado a la habitación');
-      }
+      this.alertService.success(
+        this.saleType === 'direct' ? 'Venta registrada exitosamente' : 'Cargo agregado a la habitación'
+      );
 
       this.clearCart();
       this.loadProducts();

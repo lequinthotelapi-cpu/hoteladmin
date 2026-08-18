@@ -23,7 +23,7 @@ Checklist por colección, actualizado a medida que cada Spec avanza:
 | `guestAccounts` | 07, 09 | código-completo | **SÍ** (2026-08-17) |
 | `invoices` | 10 | código-completo | **SÍ** (2026-08-17) |
 | `sales` | 11 | código-completo | **SÍ** (2026-08-17, `create`/`update`; `delete` sin tocar) |
-| `inventoryMovements` | 15 | VERIFIED por el usuario en producción | **SÍ** (2026-08-18) |
+| `inventoryMovements` | 15 | VERIFIED por el usuario en producción | **SÍ** (2026-08-18, desplegada) |
 | `products` (CRUD de catálogo) | — | evaluado en SPEC-15, decisión: fuera de alcance | NO — sin bug de concurrencia real, se deja para el cliente |
 | `users` (campos sensibles) | 01 | código-completo, sin desplegar | **SÍ** (regla ya escrita/probada desde SPEC-01, pendiente de despliegue) |
 | `rooms` | (ninguna spec la centraliza por completo — cambia de estado desde varias operaciones; evaluar al final si necesita su propia Function de "cambiar estado" o si basta con restringir escritura de campos no operativos como `basePrice`/`capacity` a admin) | — | NO |

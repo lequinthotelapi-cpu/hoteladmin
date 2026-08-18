@@ -1,6 +1,6 @@
 # SPEC-12 — Endurecimiento progresivo de `firestore.rules`
 
-**Estado:** IN PROGRESS (2026-08-17) — `bookings`, `guestAccounts`, `sales` y `invoices` ya endurecidos y probados (20 tests en verde contra el emulador real, `firestore-tests/spec12-hardening.test.js`). `products`/inventario queda explícitamente fuera de alcance por ahora — es un módulo grande, activo, con escritura directa real (CRUD de productos + movimientos de inventario) que nunca formó parte del backlog de 15 Specs original y necesita su propio tratamiento SDD antes de poder centralizarse. Ver detalle completo abajo.
+**Estado:** IN PROGRESS (2026-08-18) — `bookings`, `guestAccounts`, `sales`, `invoices` e `inventoryMovements` ya endurecidos y probados (21 tests en verde contra el emulador real, `firestore-tests/spec12-hardening.test.js`). `inventoryMovements` se cerró vía SPEC-15 (2026-08-18). `products` sigue explícitamente fuera de alcance — el CRUD de catálogo sigue siendo del cliente, se evaluó en SPEC-15 y se decidió no centralizarlo (sin bug de concurrencia real detectado). Ver detalle completo abajo.
 
 **Decisión del usuario sobre el principio "esperar a VERIFIED" del texto original:** el usuario decidió explícitamente avanzar con el endurecimiento aunque solo SPEC-05 está VERIFIED (06-11 siguen código-completo, pendientes de que el usuario las pruebe en producción) — prioriza terminar de aislar todo en Functions (para reutilizar en web/mobile/n8n) por sobre esperar la verificación exhaustiva de cada Spec una por una. Cita textual: *"si de todas formas debemos hacerlo... hagamoslo para que quede todo aislado y lo que se rompa lo vamos solucionando"*. De igual manera, se decidió no bloquearse esperando auditar Flutter (Task 12.1) — *"no importa si se rompe Flutter en este momento"*.
 **Naturaleza:** no es una migración única — es la estrategia y el checklist maestro que se ejecuta como última Task de cada Spec funcional (05-11), colección por colección, solo después de que esa Spec esté `VERIFIED`.
@@ -23,7 +23,8 @@ Checklist por colección, actualizado a medida que cada Spec avanza:
 | `guestAccounts` | 07, 09 | código-completo | **SÍ** (2026-08-17) |
 | `invoices` | 10 | código-completo | **SÍ** (2026-08-17) |
 | `sales` | 11 | código-completo | **SÍ** (2026-08-17, `create`/`update`; `delete` sin tocar) |
-| `products` (stock + CRUD) | — | **sin Spec propia todavía** | NO — ver hallazgo abajo, necesita su propia Spec nueva |
+| `inventoryMovements` | 15 | VERIFIED por el usuario en producción | **SÍ** (2026-08-18) |
+| `products` (CRUD de catálogo) | — | evaluado en SPEC-15, decisión: fuera de alcance | NO — sin bug de concurrencia real, se deja para el cliente |
 | `users` (campos sensibles) | 01 | código-completo, sin desplegar | **SÍ** (regla ya escrita/probada desde SPEC-01, pendiente de despliegue) |
 | `rooms` | (ninguna spec la centraliza por completo — cambia de estado desde varias operaciones; evaluar al final si necesita su propia Function de "cambiar estado" o si basta con restringir escritura de campos no operativos como `basePrice`/`capacity` a admin) | — | NO |
 
@@ -104,11 +105,8 @@ Las Tasks concretas de endurecimiento **no viven aquí como trabajo independient
 
   **20 tests contra el emulador real** (`firestore-tests/spec12-hardening.test.js`, nuevo archivo — se ajustó `firestore-tests/package.json` para correr todos los `*.test.js`, no solo `rules.test.js`): 4 tests (uno por colección) confirmando que `create`/`update`/`delete` directos de un usuario autenticado quedan rechazados y que `read` sigue funcionando, + 1 test de control confirmando que `products`/`rooms` (no endurecidas) siguen permitiendo escritura directa como hoy. Los 83 tests de `functions/` (que usan el Admin SDK, no sujeto a estas reglas) se reconfirmaron en verde tras el cambio.
 
-### Task 12.3 — `products`/inventario: hallazgo, fuera de alcance por ahora
-- **Objetivo:** documentar por qué esta colección no se endureció, para que quede como trabajo de seguimiento explícito, no un olvido.
-- **Estado:** BLOCKED — necesita convertirse en su propia Spec nueva antes de poder centralizarse.
-  - **Hallazgo:** a diferencia de `bookings`/`guestAccounts`/`invoices`/`sales`, `products` tiene escritura directa **real y activa**, en un módulo separado de POS que ninguna de las 15 Specs originales cubre:
-    - `features/private/products/products-list/` y `product-create-update/` — CRUD completo de productos (crear, editar, eliminar), llamado directo vía `ProductService.create/update/delete`.
-    - `features/private/inventory/movement-create/` — registro de movimientos de inventario (entrada/salida/ajuste) vía `InventoryMovementService.create`, que lee y ajusta `product.currentStock` directamente además de escribir en `inventoryMovements`.
-  - SPEC-11 (venta POS) solo centralizó el descuento de stock **durante una venta** — nunca tocó la gestión general de productos ni los movimientos manuales de inventario.
-  - **Recomendación:** crear una Spec nueva (candidata a `SPEC-15` en el backlog) para centralizar `crearProducto`/`actualizarProducto`/`eliminarProducto`/`registrarMovimientoInventario` en Functions, siguiendo el mismo proceso riguroso (leer el código real, confirmar reglas de negocio — ej. `minStock`, alertas de stock bajo — con el usuario antes de asumir nada) antes de poder endurecer `products`/`inventoryMovements`. No se apuró esta Spec dentro de SPEC-12 para no repetir el patrón de "asumir sin verificar" que ya causó hallazgos importantes en Specs anteriores.
+### Task 12.3 — `products`/inventario: hallazgo, resuelto vía SPEC-15
+- **Objetivo:** documentar por qué esta colección no se endureció junto con el resto, para que quedara como trabajo de seguimiento explícito, no un olvido.
+- **Estado:** RESUELTO (2026-08-18) — se creó SPEC-15, que investigó ambos caminos de escritura directa por separado:
+  - `features/private/inventory/movement-create/` (`InventoryMovementService.create`) — **centralizado**: tenía un bug real de concurrencia (misma condición de carrera que bookings/POS antes de sus Specs). Ahora pasa por `registrarMovimientoInventario` (transaccional), VERIFIED por el usuario en producción, y `inventoryMovements` ya quedó endurecida (`allow create, update, delete: if false;`).
+  - `features/private/products/products-list/` y `product-create-update/` (`ProductService.create/update/delete`) — **evaluado y dejado fuera de alcance deliberadamente**: no se encontró ningún bug de concurrencia real (solo un TOCTOU de bajo riesgo en la validación de código único, edición de catálogo hecha por un admin, raramente concurrente). `products` sigue con `allow create, update: if isAuthenticated()` — decisión explícita, no un olvido.

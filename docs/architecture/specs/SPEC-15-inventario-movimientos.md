@@ -1,6 +1,6 @@
 # SPEC-15 — Movimientos de inventario transaccionales
 
-**Estado:** IN PROGRESS (2026-08-17) — Tasks 15.1/15.2 completadas (Function transaccional implementada, `InventoryMovementService` ya la consume; 99 tests en verde contra el emulador real incluyendo concurrencia; 49 offline sin cambios; `ng build --configuration production` limpio). Tasks 15.3/15.4/15.5 pendientes de que despliegues y confirmes.
+**Estado:** IN PROGRESS (2026-08-18) — Tasks 15.1-15.4 VERIFIED/COMPLETED (Function desplegada a producción, confirmada por el usuario en la UI real; lógica cliente antigua ya reemplazada). Task 15.5 (endurecer `firestore.rules` para `inventoryMovements`) completa en código y probada, falta desplegarla a producción.
 
 ## Objetivo
 Centralizar `InventoryMovementService.create()` en una Function transaccional que valide y actualice el stock del producto de forma atómica junto con el registro del movimiento, cerrando el mismo tipo de riesgo de condición de carrera ya corregido en `crearReserva` (SPEC-05) y `registrarVentaPOS` (SPEC-11).
@@ -104,15 +104,15 @@ Medio — el flujo es menos usado que reservas/POS (según lo observado: sin otr
 
 ### Task 15.3 — Regresión manual y aprobación del usuario
 - **Dependencias:** Task 15.2.
-- **Estado:** IN_PROGRESS — `registrarMovimientoInventario` ya desplegada a producción (`lequinthotel-ca6ef`, 2026-08-17). Falta que el usuario pruebe desde la UI (local con `ng serve` contra Firebase real, ya que la rama `vercel` todavía no tiene estos cambios — ver nota de despliegue frontend pendiente): registrar una entrada, una salida y un ajuste desde `/inventory`.
+- **Estado:** VERIFIED (2026-08-18) — el usuario confirmó que la funcionalidad probada en producción real funciona correctamente.
 
-### Task 15.4 — Retirar lógica cliente antigua (solo tras VERIFIED)
+### Task 15.4 — Retirar lógica cliente antigua
 - **Dependencias:** Task 15.3 VERIFIED.
-- **Estado:** PENDING
+- **Estado:** COMPLETED — no quedó pendiente ningún retiro adicional: a diferencia de otras Specs, Task 15.2 ya reemplazó el cuerpo completo de `InventoryMovementService.create()` (no se dejó la lógica vieja en paralelo). Confirmado por grep que no queda ningún caller de `movementRepository.create/update` fuera del propio repositorio.
 
-### Task 15.5 — Endurecer `firestore.rules` para `products`/`inventoryMovements`
+### Task 15.5 — Endurecer `firestore.rules` para `inventoryMovements`
 - **Dependencias:** Task 15.3 VERIFIED.
-- **Estado:** PENDING
+- **Estado:** COMPLETED (código) (2026-08-18) — `inventoryMovements` pasa a `allow create, update, delete: if false` (confirmado que no queda ningún camino legítimo de escritura de cliente). `products` **deliberadamente sin tocar** — el CRUD de catálogo sigue siendo del cliente, fuera de alcance de SPEC-15. 21/21 tests en verde en `firestore-tests/` (incluye 2 nuevos: rechazo directo sobre `inventoryMovements`, y confirmación de que `products` sigue sin endurecer). Falta desplegar `firestore.rules` a producción — pendiente de tu confirmación.
 
 ---
 

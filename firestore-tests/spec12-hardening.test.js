@@ -38,6 +38,7 @@ test.beforeEach(async () => {
     await setDoc(doc(db, 'guestAccounts/account1'), { status: 'open', charges: [], payments: [] });
     await setDoc(doc(db, 'sales/sale1'), { total: 100 });
     await setDoc(doc(db, 'invoices/invoice1'), { status: 'active' });
+    await setDoc(doc(db, 'inventoryMovements/movement1'), { productId: 'prod-1', type: 'entry', quantity: 5 });
   });
 });
 
@@ -75,7 +76,15 @@ test('invoices: create/update directos quedan rechazados, read sigue funcionando
   await assertSucceeds(getDoc(doc(db, 'invoices/invoice1')));
 });
 
-test('colecciones NO endurecidas (products, rooms) siguen permitiendo escritura directa — fuera de alcance de SPEC-12 por ahora', async () => {
+test('inventoryMovements: create/update/delete directos quedan rechazados, read sigue funcionando (SPEC-15)', async () => {
+  const db = asUser();
+  await assertFails(setDoc(doc(db, 'inventoryMovements/new1'), { productId: 'prod-1', type: 'entry', quantity: 1 }));
+  await assertFails(updateDoc(doc(db, 'inventoryMovements/movement1'), { notes: 'x' }));
+  await assertFails(deleteDoc(doc(db, 'inventoryMovements/movement1')));
+  await assertSucceeds(getDoc(doc(db, 'inventoryMovements/movement1')));
+});
+
+test('colecciones NO endurecidas (products, rooms) siguen permitiendo escritura directa — fuera de alcance de SPEC-12/15 por ahora', async () => {
   const db = asUser();
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), 'rooms/room-1'), { roomNumber: '101', isActive: true });

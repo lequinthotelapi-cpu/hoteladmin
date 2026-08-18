@@ -104,12 +104,17 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
     
-    // Reglas para movimientos de inventario
+    // SPEC-15: movimientos de inventario — escritura centralizada por
+    // completo en Cloud Functions (registrarMovimientoInventario). Confirmado
+    // contra el código real que InventoryMovementService ya no llama a
+    // movementRepository.create/update, y que no expone ningún método update
+    // — no queda ningún camino legítimo de escritura directa de cliente.
+    // registrarMovimientoInventario usa el Admin SDK, que no está sujeto a
+    // estas reglas. products SIGUE sin endurecer deliberadamente (fuera de
+    // alcance de SPEC-15 — el CRUD de catálogo sigue siendo del cliente).
     match /inventoryMovements/{movementId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if false; // No se pueden eliminar movimientos
+      allow create, update, delete: if false;
     }
     
     // Reglas para gastos
